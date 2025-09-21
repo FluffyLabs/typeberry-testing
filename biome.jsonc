@@ -57,6 +57,7 @@
   "files": {
     "includes": [
       "**",
+      "!jam-conformance/**",
       "!**/dist/**/*",
       "!**/benchmarks/**/output/**/*",
       "!**/test-vectors/**/*",
