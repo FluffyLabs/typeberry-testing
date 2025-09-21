@@ -33,8 +33,11 @@ export class ExternalProcess {
       spawned.on("exit", (code, signal) => {
         if (code === 0) {
           resolve();
-        } else {
+        } else if (signal !== 'SIGKILL' && signal !== 'SIGPIPE') {
           reject(`[${this.processName}] Process exited (code: ${code}, signal: ${signal})`);
+        } else {
+          console.error(`[${this.processName}] Process had to be killed.`);
+          resolve();
         }
       });
     });
@@ -62,15 +65,20 @@ export class ExternalProcess {
       console.warn('Process already terminated. Ignoring.');
     }
 
-    console.log("Terminating process.");
+    console.log(`[${this.processName}] Terminating`);
     const grace = promises.setTimeout(SHUTDOWN_GRACE_PERIOD);
-    this.spawned.kill("SIGINT");
     this.spawned.stdin?.end();
     this.spawned.stdout?.destroy();
     this.spawned.stderr?.destroy();
+    this.spawned.kill("SIGINT");
+    this.spawned.kill("SIGTERM");
     await grace;
-    console.error("Process shutdown timing out. Killing");
-    this.spawned.kill("SIGKILL");
+    if (this.spawned.exitCode === null) {
+      console.error(`[${this.processName}] shutdown timing out. Killing`);
+      setImmediate(() => {
+        this.spawned.kill("SIGKILL");
+      });
+    }
   }
 
   terminateAfter(timeoutMs: number) {
