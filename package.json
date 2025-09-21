@@ -8,8 +8,9 @@
     "test": "tests"
   },
   "scripts": {
-    "qa-fix": "npm run format; npm run lint",
-    "qa": "biome ci && eslint .",
+    "build": "tsc",
+    "qa-fix": "npm run format && npm run lint",
+    "qa": "biome ci",
     "format": "biome format --write",
     "lint": "biome check --write --unsafe && biome lint --write",
     "fetch-typeberry": "docker pull --platform=linux/amd64 ghcr.io/fluffylabs/typeberry:latest",

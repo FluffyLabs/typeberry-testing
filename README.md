@@ -2,9 +2,17 @@
 
 E2E tests for [Typeberry](https://github.com/FluffyLabs/typeberry) - a JAM service implementation by Fluffy Labs.
 
-## Test Status
+## Status
 
+[![QA and Build](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/qa-build.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/qa-build.yml)
 [![Tests](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/tests.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/tests.yml)
+
+### Code Quality & Build
+
+| Check | Status | Description |
+|-------|--------|-------------|
+| **Code Quality** | [![Code Quality](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/qa-build.yml/badge.svg?job=qa)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/qa-build.yml) | Formatting and linting checks using Biome |
+| **Build** | [![Build](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/qa-build.yml/badge.svg?job=build)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/qa-build.yml) | TypeScript compilation check |
 
 ### Individual Test Jobs
 
@@ -33,6 +41,19 @@ npm install
 
 # Fetch the latest Typeberry Docker image
 npm run fetch-typeberry
+```
+
+### Code Quality & Build
+
+```bash
+# Run code quality checks (formatting and linting)
+npm run qa
+
+# Auto-fix formatting and linting issues
+npm run qa-fix
+
+# Build the project (TypeScript compilation)
+npm run build
 ```
 
 ### Running All Tests
