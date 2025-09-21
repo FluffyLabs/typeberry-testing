@@ -2,9 +2,42 @@ import { ExternalProcess } from "../../runner/external-process.js";
 import { execSync } from 'node:child_process';
 import { afterEach, beforeEach, describe, it } from 'node:test';
 
-export const TEST_TIMEOUT = 120_000;
 const SOCKET_PATH = '/shared/jam_target.sock';
 export const SHARED_VOLUME = 'jam-ipc-volume';
+
+export const TEST_TIMEOUT = 120_000;
+
+const DOCKER_OPTIONS = [
+  "--cpu-shares",
+  "2048",
+  "--cpu-quota",
+  "-1",
+  "--memory",
+  "512m",
+  "--memory-swap",
+  "0m",
+  "--shm-size",
+  "256m",
+  "--ulimit",
+  "nofile=1024:1024",
+  "--ulimit",
+  "nproc=1024:1024",
+  "--sysctl",
+  "net.core.somaxconn=1024",
+  "--sysctl",
+  "net.ipv4.tcp_tw_reuse=1",
+  "--security-opt",
+  "seccomp=unconfined",
+  "--security-opt",
+  "apparmor=unconfined",
+  "--cap-add",
+  "SYS_NICE",
+  "--cap-add",
+  "SYS_RESOURCE",
+  "--cap-add",
+  "IPC_LOCK",
+  "--stop-signal=SIGINT",
+];
 
 export function createSharedVolume() {
   // Clean up any existing volume and create a fresh one
@@ -28,19 +61,24 @@ export function createSharedVolume() {
   };
 }
 
-  export async function typeberry() {
+  export async function typeberry({
+    dockerArgs = [],
+    timeout = TEST_TIMEOUT,
+  }: { dockerArgs?: string[], timeout?: number } = {}) {
   const typeberry = ExternalProcess
     .spawn(
       "typeberry-multi",
       "docker",
       "run",
+      "--init",
       "--rm",
-      "--stop-signal=SIGINT",
+      ...DOCKER_OPTIONS,
       "-v", `${SHARED_VOLUME}:/shared`,
-      "ghcr.io/fluffylabs/typeberry:latest",
+      //"ghcr.io/fluffylabs/typeberry:latest",
+      "typeberry:latest",
       "fuzz-target", SOCKET_PATH
     )
-    .terminateAfter(TEST_TIMEOUT);
+    .terminateAfter(timeout);
   await typeberry.waitForMessage(/IPC server is listening/);
   return typeberry;
 }

@@ -1,0 +1,134 @@
+name: Tests
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  docker-works:
+    name: Docker Works Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Fetch Typeberry Docker image
+        run: npm run fetch-typeberry
+      
+      - name: Run Docker Works test
+        run: npx tsx --test tests/docker-works.test.ts
+
+  npm-works:
+    name: NPM Works Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Fetch Typeberry Docker image
+        run: npm run fetch-typeberry
+      
+      - name: Run NPM Works test
+        run: npx tsx --test tests/npm-works.test.ts
+
+  minifuzz-burn:
+    name: Minifuzz Burn Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Fetch Typeberry Docker image
+        run: npm run fetch-typeberry
+      
+      - name: Run Minifuzz Burn test
+        run: npx tsx --test tests/minifuzz/burn.test.ts
+
+  minifuzz-faulty:
+    name: Minifuzz Faulty Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Fetch Typeberry Docker image
+        run: npm run fetch-typeberry
+      
+      - name: Run Minifuzz Faulty test
+        run: npx tsx --test tests/minifuzz/faulty.test.ts
+
+  minifuzz-forks:
+    name: Minifuzz Forks Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Fetch Typeberry Docker image
+        run: npm run fetch-typeberry
+      
+      - name: Run Minifuzz Forks test
+        run: npx tsx --test tests/minifuzz/forks.test.ts
+
+  minifuzz-no-forks:
+    name: Minifuzz No Forks Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Fetch Typeberry Docker image
+        run: npm run fetch-typeberry
+      
+      - name: Run Minifuzz No Forks test
+        run: npx tsx --test tests/minifuzz/no_forks.test.ts
