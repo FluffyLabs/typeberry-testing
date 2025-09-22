@@ -2,9 +2,22 @@ name: Tests
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main ]
   pull_request:
-    branches: [ main, master ]
+      branches: [ main ]
+  workflow_dispatch:
+  repository_dispatch:
+  schedule:
+    # 8:00 AM Europe/Warsaw (6:00 UTC, using UTC+2 summer time)
+    - cron: '0 6 * * *'
+    # 12:00 PM Europe/Warsaw (10:00 UTC)
+    - cron: '0 10 * * *'
+    # 4:00 PM Europe/Warsaw (14:00 UTC)
+    - cron: '0 14 * * *'
+    # 8:00 PM Europe/Warsaw (18:00 UTC)
+    - cron: '0 18 * * *'
+    # Midnight Europe/Warsaw (22:00 UTC previous day)
+    - cron: '0 22 * * *'
 
 jobs:
   docker-works:
@@ -12,19 +25,19 @@ jobs:
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
-      
+
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Fetch Typeberry Docker image
         run: npm run fetch-typeberry
-      
+
       - name: Run Docker Works test
         run: npx tsx --test tests/docker-works.test.ts
 
@@ -33,19 +46,19 @@ jobs:
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
-      
+
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Fetch Typeberry Docker image
         run: npm run fetch-typeberry
-      
+
       - name: Run NPM Works test
         run: npx tsx --test tests/npm-works.test.ts
 
@@ -54,19 +67,19 @@ jobs:
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
-      
+
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Fetch Typeberry Docker image
         run: npm run fetch-typeberry
-      
+
       - name: Run Minifuzz Burn test
         run: npx tsx --test tests/minifuzz/burn.test.ts
 
@@ -75,19 +88,19 @@ jobs:
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
-      
+
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Fetch Typeberry Docker image
         run: npm run fetch-typeberry
-      
+
       - name: Run Minifuzz Faulty test
         run: npx tsx --test tests/minifuzz/faulty.test.ts
 
@@ -96,19 +109,19 @@ jobs:
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
-      
+
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Fetch Typeberry Docker image
         run: npm run fetch-typeberry
-      
+
       - name: Run Minifuzz Forks test
         run: npx tsx --test tests/minifuzz/forks.test.ts
 
@@ -117,18 +130,18 @@ jobs:
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
-      
+
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Fetch Typeberry Docker image
         run: npm run fetch-typeberry
-      
+
       - name: Run Minifuzz No Forks test
         run: npx tsx --test tests/minifuzz/no_forks.test.ts
