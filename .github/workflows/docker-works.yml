@@ -1,0 +1,60 @@
+name: Docker Works
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+      branches: [ main ]
+  workflow_dispatch:
+  repository_dispatch:
+  schedule:
+    # 8:00 AM Europe/Warsaw (6:00 UTC, using UTC+2 summer time)
+    - cron: '0 6 * * *'
+    # 12:00 PM Europe/Warsaw (10:00 UTC)
+    - cron: '0 10 * * *'
+    # 4:00 PM Europe/Warsaw (14:00 UTC)
+    - cron: '0 14 * * *'
+    # 8:00 PM Europe/Warsaw (18:00 UTC)
+    - cron: '0 18 * * *'
+    # Midnight Europe/Warsaw (22:00 UTC previous day)
+    - cron: '0 22 * * *'
+
+jobs:
+  init:
+    name: Initializing environment
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: 'true'
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm ci
+      - name: Fetch Typeberry Docker image
+        run: npm run fetch-typeberry
+
+  docker-works:
+    needs: init
+    name: Docker Works Test
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: 'true'
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Docker Works test
+        run: |
+          npm exec tsx --test tests/docker-works.test.ts

@@ -5,7 +5,9 @@ E2E tests for [Typeberry](https://github.com/FluffyLabs/typeberry) - a JAM servi
 ## Status
 
 [![QA and Build](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/qa-build.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/qa-build.yml)
-[![Tests](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/tests.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/tests.yml)
+[![Minifuzz Tests](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/minifuzz.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/minifuzz.yml)
+[![NPM Works](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/npm-works.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/npm-works.yml)
+[![Docker Works](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/docker-works.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/docker-works.yml)
 
 ### Code Quality & Build
 
@@ -14,16 +16,16 @@ E2E tests for [Typeberry](https://github.com/FluffyLabs/typeberry) - a JAM servi
 | **Code Quality** | [![Code Quality](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/qa-build.yml/badge.svg?job=qa)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/qa-build.yml) | Formatting and linting checks using Biome |
 | **Build** | [![Build](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/qa-build.yml/badge.svg?job=build)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/qa-build.yml) | TypeScript compilation check |
 
-### Individual Test Jobs
+### Individual Test Workflows
 
 | Test Category | Status | Description |
 |---------------|--------|-------------|
-| **Docker Works** | [![Docker Works Test](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/tests.yml/badge.svg?job=docker-works)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/tests.yml) | Tests Docker image functionality and basic operations |
-| **NPM Works** | [![NPM Works Test](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/tests.yml/badge.svg?job=npm-works)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/tests.yml) | Tests NPM package installation and basic functionality |
-| **Minifuzz Burn** | [![Minifuzz Burn Test](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/tests.yml/badge.svg?job=minifuzz-burn)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/tests.yml) | Burn-in testing for extended fuzzing operations |
-| **Minifuzz Faulty** | [![Minifuzz Faulty Test](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/tests.yml/badge.svg?job=minifuzz-faulty)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/tests.yml) | Tests error handling and fault tolerance |
-| **Minifuzz Forks** | [![Minifuzz Forks Test](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/tests.yml/badge.svg?job=minifuzz-forks)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/tests.yml) | Tests fork handling and process management |
-| **Minifuzz No Forks** | [![Minifuzz No Forks Test](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/tests.yml/badge.svg?job=minifuzz-no-forks)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/tests.yml) | Tests single-process operation without forking |
+| **Docker Works** | [![Docker Works](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/docker-works.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/docker-works.yml) | Tests Docker image functionality and basic operations |
+| **NPM Works** | [![NPM Works](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/npm-works.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/npm-works.yml) | Tests NPM package installation and basic functionality |
+| **Minifuzz Burn** | [![Minifuzz Burn Test](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/minifuzz.yml/badge.svg?job=minifuzz-burn)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/minifuzz.yml) | Burn-in testing for extended fuzzing operations |
+| **Minifuzz Faulty** | [![Minifuzz Faulty Test](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/minifuzz.yml/badge.svg?job=minifuzz-faulty)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/minifuzz.yml) | Tests error handling and fault tolerance |
+| **Minifuzz Forks** | [![Minifuzz Forks Test](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/minifuzz.yml/badge.svg?job=minifuzz-forks)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/minifuzz.yml) | Tests fork handling and process management |
+| **Minifuzz No Forks** | [![Minifuzz No Forks Test](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/minifuzz.yml/badge.svg?job=minifuzz-no-forks)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/minifuzz.yml) | Tests single-process operation without forking |
 
 ## Running Tests
 
