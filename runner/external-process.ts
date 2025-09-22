@@ -33,7 +33,7 @@ export class ExternalProcess {
       spawned.on("exit", (code, signal) => {
         if (code === 0) {
           resolve();
-        } else if (signal !== "SIGTERM" && signal !== "SIGKILL" && signal !== "SIGPIPE") {
+        } else if (code !== 143 && signal !== "SIGTERM" && signal !== "SIGKILL" && signal !== "SIGPIPE") {
           reject(`[${this.processName}] Process exited (code: ${code}, signal: ${signal})`);
         } else {
           console.error(`[${this.processName}] Process had to be killed.`);
