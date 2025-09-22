@@ -14,7 +14,7 @@
     "format": "biome format --write",
     "lint": "biome check --write --unsafe && biome lint --write",
     "fetch-typeberry": "docker pull --platform=linux/amd64 ghcr.io/fluffylabs/typeberry:latest",
-    "test": "tsx --test-reporter=spec --test $(find . -type d -name node_modules -prune -type f -o -name '*.test.ts' | tr '\\n' ' ')"
+    "test": "tsx --test $(find . -type d -name node_modules -prune -type f -o -name '*.test.ts' | tr '\\n' ' ')"
   },
   "repository": {
     "type": "git",

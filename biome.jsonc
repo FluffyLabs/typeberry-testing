@@ -49,7 +49,7 @@
             "ignoreNull": false
           }
         },
-        "noConsole": { "level": "error", "options": { "allow": ["log"] } }
+        "noConsole": "off"
       },
       "nursery": {}
     }

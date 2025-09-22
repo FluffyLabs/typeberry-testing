@@ -10,8 +10,12 @@ export class ExternalProcess {
       cwd: process.cwd(),
       shell: true,
     });
-    spawned.stdout.on("data", (_data: Buffer) => {});
-    spawned.stderr.on("data", (_data: Buffer) => {});
+    spawned.stdout.on('data', (data: Buffer) => {
+      console.info(`[${processName}] ${data.toString()}`);
+    });
+    spawned.stderr.on('data', (data: Buffer) => {
+      console.error(`[${processName}] ${data.toString()}`);
+    });
     return new ExternalProcess(processName, spawned);
   }
 
@@ -32,6 +36,7 @@ export class ExternalProcess {
         } else if (signal !== "SIGTERM" && signal !== "SIGKILL" && signal !== "SIGPIPE") {
           reject(`[${this.processName}] Process exited (code: ${code}, signal: ${signal})`);
         } else {
+          console.error(`[${this.processName}] Process had to be killed.`);
           resolve();
         }
       });
@@ -57,6 +62,7 @@ export class ExternalProcess {
 
   async terminate() {
     if (this.spawned.killed) {
+      console.warn('Process already terminated. Ignoring.');
     }
 
     console.log(`[${this.processName}] Terminating`);
@@ -68,6 +74,7 @@ export class ExternalProcess {
     this.spawned.kill("SIGTERM");
     await grace;
     if (this.spawned.exitCode === null) {
+      console.error(`[${this.processName}] shutdown timing out. Killing`)
       setImmediate(() => {
         this.spawned.kill("SIGKILL");
       });
@@ -76,6 +83,7 @@ export class ExternalProcess {
 
   terminateAfter(timeoutMs: number) {
     const timeout = setTimeout(() => {
+      console.error(`[${this.processName}] Test timing out, terminating the process.`)
       this.terminate();
     }, timeoutMs);
     this.spawned.on("exit", () => {

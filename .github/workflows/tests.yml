@@ -133,7 +133,9 @@ jobs:
       - name: Run Minifuzz Forks test
         env:
           NODE_OPTIONS: ""
-        run: npm exec tsx --test-reporter=spec --test tests/minifuzz/forks.test.ts
+        run:
+          echo $NODE_OPTIONS
+          npm exec tsx --test-reporter=spec --test tests/minifuzz/forks.test.ts
 
   minifuzz-no-forks:
     name: Minifuzz No Forks Test
