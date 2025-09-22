@@ -135,9 +135,9 @@ export function runMinifuzzTest(name: string, directory: string, steps: number) 
       minifuzzProc = await minifuzz(directory, steps);
 
       await minifuzzProc.waitForMessage(/Stopping after.*as requested/);
-      console.info('✅ Minifuzz finished');
+      console.info("✅ Minifuzz finished");
       await minifuzzProc.cleanExit;
-      console.info('✅ Importing successful');
+      console.info("✅ Importing successful");
     });
   });
 }

@@ -32,14 +32,14 @@ describe("Burn mode", { timeout: TIMEOUT_MINUTES * 60 * 1_000 }, () => {
     });
 
     const NO_OF_ROUNDS = 50;
-    console.time('minifuzz');
+    console.time("minifuzz");
     for (let i = 0; i < NO_OF_ROUNDS; ++i) {
       minifuzzProc = await minifuzz(EXAMPLES_DIR, 100);
       await minifuzzProc.waitForMessage(/Stopping after.*as requested/);
       console.info(`✅ Minifuzz finished (round ${i}/${NO_OF_ROUNDS})`);
       await minifuzzProc.cleanExit;
     }
-    console.timeEnd('minifuzz');
-    console.info('✅ Importing successful');
+    console.timeEnd("minifuzz");
+    console.info("✅ Importing successful");
   });
 });
