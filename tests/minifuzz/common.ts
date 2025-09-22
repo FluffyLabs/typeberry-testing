@@ -80,8 +80,7 @@ export async function typeberry({
     ...DOCKER_OPTIONS,
     "-v",
     `${SHARED_VOLUME}:/shared`,
-    //"ghcr.io/fluffylabs/typeberry:latest",
-    "typeberry:latest",
+    "ghcr.io/fluffylabs/typeberry:latest",
     "fuzz-target",
     SOCKET_PATH,
   ).terminateAfter(timeout);
