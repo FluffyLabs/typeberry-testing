@@ -39,7 +39,7 @@ jobs:
         run: npm run fetch-typeberry
 
       - name: Run Docker Works test
-        run: npx tsx --test tests/docker-works.test.ts
+        run: npm exec tsx --test-reporter=spec --test tests/docker-works.test.ts
 
   npm-works:
     name: NPM Works Test
@@ -60,7 +60,7 @@ jobs:
         run: npm run fetch-typeberry
 
       - name: Run NPM Works test
-        run: npx tsx --test tests/npm-works.test.ts
+        run: npm exec tsx --test-reporter=spec --test tests/npm-works.test.ts
 
   minifuzz-burn:
     name: Minifuzz Burn Test
@@ -81,7 +81,7 @@ jobs:
         run: npm run fetch-typeberry
 
       - name: Run Minifuzz Burn test
-        run: npx tsx --test tests/minifuzz/burn.test.ts
+        run: npm exec tsx --test-reporter=spec --test tests/minifuzz/burn.test.ts
 
   minifuzz-faulty:
     name: Minifuzz Faulty Test
@@ -102,7 +102,7 @@ jobs:
         run: npm run fetch-typeberry
 
       - name: Run Minifuzz Faulty test
-        run: npx tsx --test tests/minifuzz/faulty.test.ts
+        run: npm exec tsx --test-reporter=spec --test tests/minifuzz/faulty.test.ts
 
   minifuzz-forks:
     name: Minifuzz Forks Test
@@ -123,7 +123,7 @@ jobs:
         run: npm run fetch-typeberry
 
       - name: Run Minifuzz Forks test
-        run: npx tsx --test tests/minifuzz/forks.test.ts
+        run: npm exec tsx --test-reporter=spec --test tests/minifuzz/forks.test.ts
 
   minifuzz-no-forks:
     name: Minifuzz No Forks Test
@@ -144,4 +144,4 @@ jobs:
         run: npm run fetch-typeberry
 
       - name: Run Minifuzz No Forks test
-        run: npx tsx --test tests/minifuzz/no_forks.test.ts
+        run: npm exec tsx --test-reporter=spec --test tests/minifuzz/no_forks.test.ts

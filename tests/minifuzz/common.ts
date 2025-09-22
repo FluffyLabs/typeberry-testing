@@ -42,21 +42,19 @@ const DOCKER_OPTIONS = [
 export function createSharedVolume() {
   // Clean up any existing volume and create a fresh one
   try {
-    execSync(`docker volume rm ${SHARED_VOLUME}`, { stdio: "ignore" });
+    execSync(`docker volume rm ${SHARED_VOLUME}`);
   } catch {
     // Volume might not exist, ignore
   }
-  execSync(`docker volume create ${SHARED_VOLUME}`, { stdio: "ignore" });
+  execSync(`docker volume create ${SHARED_VOLUME}`);
 
   // Initialize the volume with proper permissions
-  execSync(`docker run --rm -v ${SHARED_VOLUME}:/shared alpine sh -c "mkdir -p /shared && chmod 777 /shared"`, {
-    stdio: "ignore",
-  });
+  execSync(`docker run --rm -v ${SHARED_VOLUME}:/shared alpine sh -c "mkdir -p /shared && chmod 777 /shared"`);
 
   return () => {
     // Clean up the shared volume
     try {
-      execSync(`docker volume rm ${SHARED_VOLUME}`, { stdio: "ignore" });
+      execSync(`docker volume rm ${SHARED_VOLUME}`);
     } catch {
       // Volume might be in use, ignore
     }
