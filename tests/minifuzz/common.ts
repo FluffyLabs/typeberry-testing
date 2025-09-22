@@ -36,7 +36,7 @@ const DOCKER_OPTIONS = [
   "SYS_RESOURCE",
   "--cap-add",
   "IPC_LOCK",
-  "--stop-signal=SIGINT",
+  "--stop-signal=SIGKILL",
 ];
 
 export function createSharedVolume() {

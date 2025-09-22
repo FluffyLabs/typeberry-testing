@@ -20,11 +20,33 @@ on:
     - cron: '0 22 * * *'
 
 jobs:
+  init:
+    name: Initializing environment
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: 'true'
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm ci
+      - name: Fetch Typeberry Docker image
+        run: npm run fetch-typeberry
+      - name: Build minifuzz
+        run: npm run build-minifuzz
+
   docker-works:
+    needs: init
     name: Docker Works Test
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: 'true'
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -34,19 +56,19 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-
-      - name: Fetch Typeberry Docker image
-        run: npm run fetch-typeberry
 
       - name: Run Docker Works test
         run: |
           npm exec tsx --test tests/docker-works.test.ts
 
   npm-works:
+    needs: init
     name: NPM Works Test
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: 'true'
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -56,19 +78,19 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-
-      - name: Fetch Typeberry Docker image
-        run: npm run fetch-typeberry
 
       - name: Run NPM Works test
         run: |
           npm exec tsx --test tests/npm-works.test.ts
 
   minifuzz-burn:
+    needs: init
     name: Minifuzz Burn Test
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: 'true'
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -78,19 +100,19 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-
-      - name: Fetch Typeberry Docker image
-        run: npm run fetch-typeberry
 
       - name: Run Minifuzz Burn test
         run: |
           npm exec tsx --test tests/minifuzz/burn.test.ts
 
   minifuzz-faulty:
+    needs: init
     name: Minifuzz Faulty Test
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: 'true'
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -100,19 +122,19 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-
-      - name: Fetch Typeberry Docker image
-        run: npm run fetch-typeberry
 
       - name: Run Minifuzz Faulty test
         run: |
           npm exec tsx --test tests/minifuzz/faulty.test.ts
 
   minifuzz-forks:
+    needs: init
     name: Minifuzz Forks Test
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: 'true'
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -122,19 +144,19 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-
-      - name: Fetch Typeberry Docker image
-        run: npm run fetch-typeberry
 
       - name: Run Minifuzz Forks test
         run: |
           npm exec tsx --test tests/minifuzz/forks.test.ts
 
   minifuzz-no-forks:
+    needs: init
     name: Minifuzz No Forks Test
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: 'true'
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -144,9 +166,6 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-
-      - name: Fetch Typeberry Docker image
-        run: npm run fetch-typeberry
 
       - name: Run Minifuzz No Forks test
         run: |
