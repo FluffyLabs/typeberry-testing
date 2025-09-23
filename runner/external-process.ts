@@ -8,7 +8,6 @@ export class ExternalProcess {
     console.log(`Spawning ${processName}: "${command} ${args.join(" ")}"`);
     const spawned = spawn(command, args, {
       cwd: process.cwd(),
-      shell: true,
     });
     spawned.stdout.on("data", (data: Buffer) => {
       console.info(`[${processName}] ${data.toString()}`);
@@ -70,7 +69,6 @@ export class ExternalProcess {
     this.spawned.stdin?.end();
     this.spawned.stdout?.destroy();
     this.spawned.stderr?.destroy();
-    this.spawned.kill("SIGINT");
     this.spawned.kill("SIGTERM");
     await grace;
     if (this.spawned.exitCode === null) {

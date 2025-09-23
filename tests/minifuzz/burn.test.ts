@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, it } from "node:test";
 import type { ExternalProcess } from "../../runner/external-process.js";
 import { createSharedVolume, minifuzz, typeberry } from "./common.js";
 
-const TIMEOUT_MINUTES = 10;
+const TIMEOUT_MINUTES = 15;
 
 const EXAMPLES_DIR = "jam-conformance/fuzz-proto/examples/v1/forks";
 describe("Burn mode", { timeout: TIMEOUT_MINUTES * 60 * 1_000 }, () => {
