@@ -8,10 +8,13 @@ const EXAMPLES_DIR = "jam-conformance/fuzz-proto/examples/v1/forks";
 describe("Burn mode", { timeout: TIMEOUT_MINUTES * 60 * 1_000 }, () => {
   let typeberryProc: ExternalProcess | null = null;
   let minifuzzProc: ExternalProcess | null = null;
-  let sharedVolume = () => {};
+  let sharedVolume = {
+    name: "none",
+    stop: () => {},
+  };
 
   beforeEach(() => {
-    sharedVolume = createSharedVolume();
+    sharedVolume = createSharedVolume("burn");
   });
 
   afterEach(async () => {
@@ -23,18 +26,23 @@ describe("Burn mode", { timeout: TIMEOUT_MINUTES * 60 * 1_000 }, () => {
       // ignore
     }
 
-    sharedVolume();
+    sharedVolume.stop();
   });
 
   it("should keep reasonable resources when running minifuzz many times", async () => {
     typeberryProc = await typeberry({
       timeout: TIMEOUT_MINUTES * 60 * 1_000,
+      sharedVolume: sharedVolume.name,
     });
 
     const NO_OF_ROUNDS = 50;
     console.time("minifuzz");
     for (let i = 0; i < NO_OF_ROUNDS; ++i) {
-      minifuzzProc = await minifuzz(EXAMPLES_DIR, 100);
+      minifuzzProc = await minifuzz({
+        dir: EXAMPLES_DIR,
+        stopAfter: 100,
+        sharedVolume: sharedVolume.name,
+      });
       await minifuzzProc.waitForMessage(/Stopping after.*as requested/);
       console.info(`✅ Minifuzz finished (round ${i}/${NO_OF_ROUNDS})`);
       await minifuzzProc.cleanExit;

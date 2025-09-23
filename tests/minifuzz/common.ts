@@ -36,48 +36,53 @@ const DOCKER_OPTIONS = [
   "SYS_RESOURCE",
   "--cap-add",
   "IPC_LOCK",
-  "--stop-signal=SIGKILL",
+  "--stop-timeout=5",
 ];
 
-export function createSharedVolume() {
+export function createSharedVolume(name = "") {
+  const volumeName = `${SHARED_VOLUME}${name}`;
   // Clean up any existing volume and create a fresh one
   try {
-    execSync(`docker volume rm ${SHARED_VOLUME}`);
+    execSync(`docker volume rm ${volumeName}`);
   } catch {
     // Volume might not exist, ignore
   }
-  execSync(`docker volume create ${SHARED_VOLUME}`);
+  execSync(`docker volume create ${volumeName}`);
 
   // Initialize the volume with proper permissions
-  execSync(`docker run --rm -v ${SHARED_VOLUME}:/shared alpine sh -c "mkdir -p /shared && chmod 777 /shared"`);
+  execSync(`docker run --rm -v ${volumeName}:/shared alpine sh -c "mkdir -p /shared && chmod 777 /shared"`);
 
-  return () => {
-    // Clean up the shared volume
-    try {
-      execSync(`docker volume rm ${SHARED_VOLUME}`);
-    } catch {
-      // Volume might be in use, ignore
-    }
+  return {
+    name: volumeName,
+    stop: () => {
+      // Clean up the shared volume
+      try {
+        execSync(`docker volume rm ${volumeName}`);
+      } catch {
+        // Volume might be in use, ignore
+      }
+    },
   };
 }
 
 export async function typeberry({
   dockerArgs = [],
+  sharedVolume = SHARED_VOLUME,
   timeout = TEST_TIMEOUT,
 }: {
   dockerArgs?: string[];
+  sharedVolume?: string;
   timeout?: number;
 } = {}) {
   const typeberry = ExternalProcess.spawn(
     "typeberry-multi",
     "docker",
     "run",
-    "--init",
     "--rm",
     ...dockerArgs,
     ...DOCKER_OPTIONS,
     "-v",
-    `${SHARED_VOLUME}:/shared`,
+    `${sharedVolume}:/shared`,
     "ghcr.io/fluffylabs/typeberry:latest",
     "fuzz-target",
     SOCKET_PATH,
@@ -86,7 +91,15 @@ export async function typeberry({
   return typeberry;
 }
 
-export async function minifuzz(dir: string, stopAfter = 20) {
+export async function minifuzz({
+  dir,
+  stopAfter = 20,
+  sharedVolume = SHARED_VOLUME,
+}: {
+  dir: string;
+  stopAfter?: number;
+  sharedVolume?: string;
+}) {
   return ExternalProcess.spawn(
     "minifuzz-multi",
     "docker",
@@ -95,7 +108,7 @@ export async function minifuzz(dir: string, stopAfter = 20) {
     "-v",
     `${process.cwd()}/jam-conformance:/app/jam-conformance:ro`,
     "-v",
-    `${SHARED_VOLUME}:/shared`,
+    `${sharedVolume}:/shared`,
     "minifuzz",
     "--trace-dir",
     `/app/${dir}`,
@@ -112,10 +125,13 @@ export function runMinifuzzTest(name: string, directory: string, steps: number) 
   describe(name, { timeout: TEST_TIMEOUT }, () => {
     let typeberryProc: ExternalProcess | null = null;
     let minifuzzProc: ExternalProcess | null = null;
-    let sharedVolume = () => {};
+    let sharedVolume = {
+      name: "none",
+      stop: () => {},
+    };
 
     beforeEach(() => {
-      sharedVolume = createSharedVolume();
+      sharedVolume = createSharedVolume(name);
     });
 
     afterEach(async () => {
@@ -127,12 +143,18 @@ export function runMinifuzzTest(name: string, directory: string, steps: number) 
         // ignore
       }
 
-      sharedVolume();
+      sharedVolume.stop();
     });
 
     it(`should run ${name} tests`, async () => {
-      typeberryProc = await typeberry();
-      minifuzzProc = await minifuzz(directory, steps);
+      typeberryProc = await typeberry({
+        sharedVolume: sharedVolume.name,
+      });
+      minifuzzProc = await minifuzz({
+        dir: directory,
+        stopAfter: steps,
+        sharedVolume: sharedVolume.name,
+      });
 
       await minifuzzProc.waitForMessage(/Stopping after.*as requested/);
       console.info("✅ Minifuzz finished");

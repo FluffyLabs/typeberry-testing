@@ -1,7 +1,7 @@
 import { type ChildProcessWithoutNullStreams, spawn } from "node:child_process";
 import { promises, setTimeout } from "node:timers";
 
-const SHUTDOWN_GRACE_PERIOD = 5_000;
+const SHUTDOWN_GRACE_PERIOD = 15_000;
 
 export class ExternalProcess {
   static spawn(processName: string, command: string, ...args: string[]) {
