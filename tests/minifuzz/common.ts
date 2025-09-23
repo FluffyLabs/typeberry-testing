@@ -36,7 +36,7 @@ const DOCKER_OPTIONS = [
   "SYS_RESOURCE",
   "--cap-add",
   "IPC_LOCK",
-  "--stop-signal=SIGKILL",
+  "--stop-timeout=5"
 ];
 
 export function createSharedVolume() {
@@ -72,7 +72,6 @@ export async function typeberry({
     "typeberry-multi",
     "docker",
     "run",
-    "--init",
     "--rm",
     ...dockerArgs,
     ...DOCKER_OPTIONS,
