@@ -4,19 +4,9 @@ E2E tests for [Typeberry](https://github.com/FluffyLabs/typeberry) - a JAM servi
 
 ## Status
 
-[![QA and Build](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/qa-build.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/qa-build.yml)
 [![Minifuzz Tests](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/minifuzz.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/minifuzz.yml)
 [![NPM Works](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/npm-works.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/npm-works.yml)
 [![Docker Works](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/docker-works.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/docker-works.yml)
-
-### Code Quality & Build
-
-| Check | Status | Description |
-|-------|--------|-------------|
-| **Code Quality** | [![Code Quality](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/qa-build.yml/badge.svg?job=qa)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/qa-build.yml) | Formatting and linting checks using Biome |
-| **Build** | [![Build](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/qa-build.yml/badge.svg?job=build)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/qa-build.yml) | TypeScript compilation check |
-
-### Individual Test Workflows
 
 | Test Category | Status | Description |
 |---------------|--------|-------------|
@@ -43,19 +33,6 @@ npm install
 
 # Fetch the latest Typeberry Docker image
 npm run fetch-typeberry
-```
-
-### Code Quality & Build
-
-```bash
-# Run code quality checks (formatting and linting)
-npm run qa
-
-# Auto-fix formatting and linting issues
-npm run qa-fix
-
-# Build the project (TypeScript compilation)
-npm run build
 ```
 
 ### Running All Tests
