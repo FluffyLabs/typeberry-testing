@@ -24,6 +24,7 @@ async function main() {
   const args = parseArgs();
   const socket = await Socket.connect(args.socket);
   const spec = args.flavour === "tiny" ? config.tinyChainSpec : config.fullChainSpec;
+  console.log(args);
 
   try {
     const binFiles = await getBinFiles(args.directory);
