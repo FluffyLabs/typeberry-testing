@@ -41,6 +41,7 @@ export function parseArgs(): Args {
   const socket = argv._[1];
   const repeat = argv.repeat;
   const flavour = argv.flavour ?? "tiny";
+  const output = argv.stats;
 
   if (!directory || !socket) {
     console.error("Error: directory and socket are required");
@@ -66,6 +67,6 @@ export function parseArgs(): Args {
     socket,
     repeat,
     flavour,
-    output: argv.stats,
+    output,
   };
 }
