@@ -55,7 +55,7 @@ function renderStats(key: string, stats: BigIntStats) {
   const round = (v: bigint | number) => (Number(v) / 1_000).toFixed(1);
 
   const s: string[] = [];
-  const fill = `== ${"".padStart(FILL, "")}`;
+  const fill = `== ${"".padStart(FILL, " ")}`;
   s.push(`== ${key.padEnd(FILL, "")}`);
   s.push(`${fill}min: ${round(stats.min)} [${UNIT}]`);
   s.push(`${fill}max: ${round(stats.max)} [${UNIT}]`);
