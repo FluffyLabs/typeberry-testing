@@ -1,4 +1,4 @@
-import * as net from 'node:net';
+import * as net from "node:net";
 
 const LEN_PREFIX_BYTES = 4;
 
@@ -17,10 +17,10 @@ export class Socket {
     const client = net.createConnection(socketPath);
 
     await new Promise<void>((resolve, reject) => {
-      client.once('connect', () => {
+      client.once("connect", () => {
         resolve();
       });
-      client.once('error', () => {
+      client.once("error", () => {
         reject();
       });
     });
@@ -28,21 +28,19 @@ export class Socket {
     return new Socket(client);
   }
 
-  private constructor(
-    private readonly socket: net.Socket
-  ) {}
+  private constructor(private readonly socket: net.Socket) {}
 
   async send(data: Buffer | Uint8Array): Promise<Buffer> {
     // prepare to read response.
     let responseBuffer = Buffer.alloc(0);
     let expectedLength: number | null = null;
 
-    const response = new Promise((resolve, reject) => {
+    const response = new Promise<Buffer>((resolve, reject) => {
       const socket = this.socket;
 
-      socket.on('data', readResponse);
-      socket.once('error', reject);
-      socket.once('close', closeHandler);
+      socket.on("data", readResponse);
+      socket.once("error", reject);
+      socket.once("close", closeHandler);
 
       function readResponse(chunk: Buffer) {
         responseBuffer = Buffer.concat([responseBuffer, chunk]);
@@ -58,15 +56,15 @@ export class Socket {
 
         // we now have everything, we can resolve the promise.
         const responseData = responseBuffer.subarray(LEN_PREFIX_BYTES, expectedLength + LEN_PREFIX_BYTES);
-        socket.off('data', readResponse);
-        socket.off('error', reject);
-        socket.off('close', closeHandler);
+        socket.off("data", readResponse);
+        socket.off("error", reject);
+        socket.off("close", closeHandler);
         resolve(responseData);
       }
 
       function closeHandler() {
         if (expectedLength === null || responseBuffer.length < expectedLength + 4) {
-          reject(new Error('Connection closed before receiving complete response'));
+          reject(new Error("Connection closed before receiving complete response"));
         }
       }
     });
@@ -83,4 +81,3 @@ export class Socket {
     this.socket.end();
   }
 }
-

@@ -1,5 +1,4 @@
-const GENESIS_IMPORT = '00000000.bin';
-
+const GENESIS_IMPORT = "00000000.bin";
 
 export class Stats {
   static new(peer: string) {
@@ -8,9 +7,7 @@ export class Stats {
 
   public readonly stats: Map<string, bigint[]> = new Map();
 
-  private constructor(
-    public readonly peer: string,
-  ) {}
+  private constructor(public readonly peer: string) {}
 
   async measure(name: string, what: () => Promise<void>) {
     const start = process.hrtime.bigint();
@@ -27,8 +24,8 @@ export class Stats {
     this.stats.set(name, data);
   }
 
-  toString(withDetails: boolean = false) {
-    const aggregated = [];
+  toString(withDetails = false) {
+    const aggregated: bigint[] = [];
 
     const s = [`=== Stats for ${this.peer} ===`];
     for (const [key, values] of this.stats) {
@@ -42,9 +39,9 @@ export class Stats {
     }
 
     const stats = calculateBigIntStats(aggregated);
-    s.push(...renderStats('aggregated', stats));
+    s.push(...renderStats("aggregated", stats));
 
-    return s.join('\n');
+    return s.join("\n");
   }
 }
 
@@ -54,10 +51,10 @@ function renderStats(key: string, stats: BigIntStats) {
   }
 
   const FILL = 16;
-  const UNIT = 'μs';
+  const UNIT = "μs";
   const round = (v: bigint | number) => (Number(v) / 1_000).toFixed(1);
 
-  const s = [];
+  const s: string[] = [];
   const fill = `== ${"".padStart(FILL, "")}`;
   s.push(`== ${key.padEnd(FILL, "")}`);
   s.push(`${fill}min: ${round(stats.min)} [${UNIT}]`);
@@ -69,7 +66,7 @@ function renderStats(key: string, stats: BigIntStats) {
 
   s.push(`${fill}p90: ${round(stats.percentiles.p90)} [${UNIT}]`);
   s.push(`${fill}p99: ${round(stats.percentiles.p99)} [${UNIT}]`);
-  s.push('');
+  s.push("");
   return s;
 }
 
@@ -98,24 +95,24 @@ interface BigIntStats {
 
 function calculateBigIntStats(bigintArray: bigint[]): BigIntStats {
   if (!Array.isArray(bigintArray) || bigintArray.length === 0) {
-    throw new Error('Input must be a non-empty array');
+    throw new Error("Input must be a non-empty array");
   }
 
   // Validate all elements are BigInt
   for (const val of bigintArray) {
-    if (typeof val !== 'bigint') {
-      throw new Error('All array elements must be BigInt values');
+    if (typeof val !== "bigint") {
+      throw new Error("All array elements must be BigInt values");
     }
   }
 
   const n = BigInt(bigintArray.length);
-  const sorted = [...bigintArray].sort((a, b) => a < b ? -1 : a > b ? 1 : 0);
+  const sorted = [...bigintArray].sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
 
   // Helper function to convert BigInt to Number safely for calculations
   function bigintToNumber(val: bigint): number {
     const num = Number(val);
     if (!Number.isFinite(num)) {
-      console.warn('BigInt value may be too large for precise Number conversion:', val);
+      console.warn("BigInt value may be too large for precise Number conversion:", val);
     }
     return num;
   }
@@ -125,10 +122,11 @@ function calculateBigIntStats(bigintArray: bigint[]): BigIntStats {
   const mean = sum / n;
 
   // Calculate standard deviation
-  const variance = bigintArray.reduce((acc, val) => {
-    const diff = bigintToNumber(val - mean);
-    return acc + (diff * diff);
-  }, 0) / Number(n);
+  const variance =
+    bigintArray.reduce((acc, val) => {
+      const diff = bigintToNumber(val - mean);
+      return acc + diff * diff;
+    }, 0) / Number(n);
   const stdDev = Math.sqrt(variance);
 
   // Percentile calculation helper
@@ -167,7 +165,7 @@ function calculateBigIntStats(bigintArray: bigint[]): BigIntStats {
       p75: getPercentile(sorted, 75),
       p90: getPercentile(sorted, 90),
       p95: getPercentile(sorted, 95),
-      p99: getPercentile(sorted, 99)
-    }
+      p99: getPercentile(sorted, 99),
+    },
   };
 }

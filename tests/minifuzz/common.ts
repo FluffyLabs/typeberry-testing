@@ -1,6 +1,6 @@
 import { execSync } from "node:child_process";
 import { afterEach, beforeEach, describe, it } from "node:test";
-import { ExternalProcess } from "../../runner/external-process.js";
+import { ExternalProcess } from "../external-process.js";
 
 const SOCKET_PATH = "/shared/jam_target.sock";
 export const SHARED_VOLUME = "jam-ipc-volume";

@@ -1,12 +1,12 @@
-import * as fs from 'node:fs/promises';
-import * as path from 'node:path';
+import * as fs from "node:fs/promises";
+import * as path from "node:path";
 
 export async function getBinFiles(directory: string): Promise<string[]> {
   const files = await fs.readdir(directory);
   const binFiles: string[] = [];
 
   for (const file of files) {
-    if (file.endsWith('.bin')) {
+    if (file.endsWith(".bin")) {
       const filePath = path.join(directory, file);
       const stats = await fs.stat(filePath);
       if (stats.isFile()) {
@@ -18,7 +18,10 @@ export async function getBinFiles(directory: string): Promise<string[]> {
   return binFiles;
 }
 
-export async function processFile(filePath: string, doProcess: (filePath: string, fileData: Buffer) => Promise<boolean>): Promise<boolean> {
+export async function processFile(
+  filePath: string,
+  doProcess: (filePath: string, fileData: Buffer) => Promise<boolean>,
+): Promise<boolean> {
   try {
     const fileData = await fs.readFile(filePath);
 
@@ -32,4 +35,3 @@ export async function processFile(filePath: string, doProcess: (filePath: string
     return false;
   }
 }
-

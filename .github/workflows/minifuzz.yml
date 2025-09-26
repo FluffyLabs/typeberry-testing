@@ -37,7 +37,7 @@ jobs:
       - name: Fetch Typeberry Docker image
         run: npm run fetch-typeberry
       - name: Build minifuzz
-        run: npm run build-minifuzz
+        run: npm run build -w minifuzz
 
   minifuzz-burn:
     needs: init

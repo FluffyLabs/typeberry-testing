@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 
-import {parseArgs} from './args.js';
-import {getBinFiles, processFile} from './files.js';
-import {Socket} from './socket.js';
-import {codec, config, fuzz_proto, numbers, utils} from "@typeberry/lib";
-import packageJson from "../package.json" with { type: "json" };
-import {Stats} from './stats.js';
+import { codec, config, fuzz_proto, numbers, utils } from "@typeberry/lib";
+import { parseArgs } from "./args.js";
+import { getBinFiles, processFile } from "./files.js";
+import packageJson from "./package.json";
+import { Socket } from "./socket.js";
+import { Stats } from "./stats.js";
 
 const { PeerInfo, MessageType, Version, messageCodec } = fuzz_proto.v1;
 
@@ -14,7 +14,7 @@ const APP_VERSION = packageJson.version;
 const GP_VERSION = utils.CURRENT_VERSION;
 const spec = config.tinyChainSpec;
 
-main().catch(e => {
+main().catch((e) => {
   console.error(e);
   process.exit(-1);
 });
@@ -31,7 +31,7 @@ async function main() {
 
     const stats = Stats.new(peerName);
 
-    for (let i=0; i < args.repeat; i++) {
+    for (let i = 0; i < args.repeat; i++) {
       for (const file of binFiles) {
         const success = await processFile(file, (filePath, fileData) => {
           return handleRequest(socket, stats, filePath, fileData);
@@ -43,10 +43,10 @@ async function main() {
         }
       }
     }
-    console.log('All files processed successfully');
+    console.log("All files processed successfully");
     console.info(`${stats}`);
   } catch (error) {
-    console.error('Error:', error);
+    console.error("Error:", error);
     process.exit(1);
   } finally {
     socket.close();
@@ -82,12 +82,7 @@ async function sendHandshake(socket: Socket) {
   return peerName;
 }
 
-async function handleRequest(
-  socket: Socket,
-  stats: Stats,
-  filePath: string,
-  fileData: Buffer
-) {
+async function handleRequest(socket: Socket, stats: Stats, filePath: string, fileData: Buffer) {
   const msgIn = decodeMessage(fileData);
   console.log(`[node] <-- ${MessageType[msgIn.type]} ${msgIn.value}`);
 

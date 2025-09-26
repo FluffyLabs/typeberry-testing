@@ -1,0 +1,15 @@
+{
+  "name": "minifuzz",
+  "version": "1.0.0",
+  "description": "Mini fuzz utils.",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "docker run --rm minifuzz",
+    "build": "npm run build-docker",
+    "build-docker": "./minifuzz-docker-build.sh",
+    "test": "tsx --test $(find . -type d -name node_modules -prune -type f -o -name '*.test.ts' | tr '\\n' ' ')"
+  },
+  "author": "Fluffy Labs",
+  "license": "MPL-2.0"
+}

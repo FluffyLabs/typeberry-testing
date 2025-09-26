@@ -6,7 +6,7 @@ set -ex
 
 CONVERT="npx @typeberry/convert@next --"
 SOURCE=../jam-test-vectors/traces
-DEST=../picofuzz-tests
+DEST=../picofuzz-data
 
 for DIR in fallback safrole storage storage_light; do
   mkdir -p $DEST/$DIR || true
