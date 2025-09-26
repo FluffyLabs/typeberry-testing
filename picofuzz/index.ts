@@ -77,7 +77,7 @@ async function sendHandshake(socket: Socket) {
   }
   const peer = msgOut.value;
   const peerName = `${peer.name}@${peer.appVersion.major}.${peer.appVersion.minor}.${peer.appVersion.patch}`;
-  console.info(`[${peerName}] <-> Handhake successful ${peer}`);
+  console.info(`[${peerName}] <-> Handshake successful ${peer}`);
 
   return peerName;
 }
