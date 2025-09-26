@@ -1,4 +1,4 @@
-name: Minifuzz Tests
+name: Picofuzz Tests
 
 on:
   push:
@@ -36,16 +36,17 @@ jobs:
         run: npm ci
       - name: Fetch Typeberry Docker image
         run: npm run fetch-typeberry
-      - name: Build minifuzz
-        run: npm run build -w minifuzz
+      - name: Build picofuzz
+        run: npm run build-docker -w @fluffylabs/picofuzz
 
-  minifuzz:
+  picofuzz:
     needs: init
-    name: Minifuzz Tests
+    name: Picofuzz Test
     runs-on: self-hosted
     strategy:
       matrix:
-        test: [burn, faulty, forks, no_forks]
+        test: [fallback, safrole, storage, storage_light]
+
     steps:
       - uses: actions/checkout@v4
         with:
@@ -60,6 +61,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run Minifuzz ${{ matrix.test }} test
+      - name: Run picofuzz ${{ matrix.test }}
         run: |
-          npm exec tsx --test tests/minifuzz/${{ matrix.test }}.test.ts
+          npm exec tsx --test tests/picofuzz/${{ matrix.test }}.test.ts

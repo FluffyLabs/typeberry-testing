@@ -20,7 +20,7 @@ on:
     - cron: '0 22 * * *'
 
 jobs:
-   npm-works:
+  npm-works:
     name: NPM Works Test
     runs-on: self-hosted
     steps:
