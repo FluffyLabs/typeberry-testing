@@ -1,6 +1,5 @@
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
-import {sendToSocket} from './socket.js';
 
 export async function getBinFiles(directory: string): Promise<string[]> {
   const files = await fs.readdir(directory);

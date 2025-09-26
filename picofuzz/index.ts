@@ -5,6 +5,7 @@ import {getBinFiles, processFile} from './files.js';
 import {Socket} from './socket.js';
 import {codec, config, fuzz_proto, numbers, utils} from "@typeberry/lib";
 import packageJson from "../package.json" with { type: "json" };
+import {Stats} from './stats.js';
 
 const { PeerInfo, MessageType, Version, messageCodec } = fuzz_proto.v1;
 
@@ -14,57 +15,51 @@ const GP_VERSION = utils.CURRENT_VERSION;
 const spec = config.tinyChainSpec;
 
 main().catch(e => {
-    console.error(e);
-    process.exit(-1);
-  });
+  console.error(e);
+  process.exit(-1);
+});
 
 async function main() {
   const args = parseArgs();
+  const socket = await Socket.connect(args.socket);
 
   try {
     const binFiles = await getBinFiles(args.directory);
     console.log(`Found ${binFiles.length} .bin files`);
 
-    const socket = await Socket.connect(args.socket);
+    const peerName = await sendHandshake(socket);
 
-    await sendHandshake(socket);
+    const stats = Stats.new(peerName);
 
-    for (const file of binFiles) {
-      const success = await processFile(file, (filePath, fileData) => {
-        return handleRequest(socket, filePath, fileData);
-      });
+    for (let i=0; i < args.repeat; i++) {
+      for (const file of binFiles) {
+        const success = await processFile(file, (filePath, fileData) => {
+          return handleRequest(socket, stats, filePath, fileData);
+        });
 
-      if (!success) {
-        console.error(`Stopping due to error with file: ${file}`);
-        process.exit(1);
+        if (!success) {
+          console.error(`Stopping due to error with file: ${file}`);
+          process.exit(1);
+        }
       }
     }
-
     console.log('All files processed successfully');
+    console.info(`${stats}`);
   } catch (error) {
     console.error('Error:', error);
     process.exit(1);
+  } finally {
+    socket.close();
   }
 }
 
-function decodeMessage(data: Buffer, isRequest: boolean): boolean {
+function decodeMessage(data: Buffer): fuzz_proto.v1.MessageData {
   const arr = new Uint8Array(data);
-  try {
-    const msg: fuzz_proto.v1.MessageData = codec.Decoder.decodeObject(messageCodec, arr, spec);
-    if (isRequest) {
-      console.log(`[node] <-- ${MessageType[msg.type]} ${msg.value}`);
-    } else {
-      console.log(`[node] --> ${MessageType[msg.type]} ${msg.value}`);
-    }
-  } catch (e) {
-    console.error('Unable to decode fuzzer message.');
-    return false;
-  }
-  return true;
+  return codec.Decoder.decodeObject(messageCodec, arr, spec);
 }
 
 async function sendHandshake(socket: Socket) {
-  const msg: fuzz_proto.v1.MessageData = {
+  const msgIn: fuzz_proto.v1.MessageData = {
     type: MessageType.PeerInfo,
     value: PeerInfo.create({
       fuzzVersion: numbers.tryAsU8(1),
@@ -74,26 +69,35 @@ async function sendHandshake(socket: Socket) {
       name: APP_NAME,
     }),
   };
-  const encoded = codec.Encoder.encodeObject(messageCodec, msg, spec);
+  const encoded = codec.Encoder.encodeObject(messageCodec, msgIn, spec);
   const response = await socket.send(encoded.raw);
-  const canDecode = decodeMessage(response, false);
-  if (!canDecode) {
-    throw new Error('Failed to decode handshake response');
+  const msgOut = decodeMessage(response);
+  if (msgOut.type !== MessageType.PeerInfo) {
+    throw new Error(`Invalid handshake response: ${MessageType[msgOut.type]}`);
   }
+  const peer = msgOut.value;
+  const peerName = `${peer.name}@${peer.appVersion.major}.${peer.appVersion.minor}.${peer.appVersion.patch}`;
+  console.info(`[${peerName}] <-> Handhake successful ${peer}`);
+
+  return peerName;
 }
 
-async function handleRequest(socket: Socket, filePath: string, fileData: Buffer) {
-  const canDecode = decodeMessage(fileData, true);
-  if (!canDecode) {
-    throw new Error(`Failed to decode file: ${filePath}`);
-  }
+async function handleRequest(
+  socket: Socket,
+  stats: Stats,
+  filePath: string,
+  fileData: Buffer
+) {
+  const msgIn = decodeMessage(fileData);
+  console.log(`[node] <-- ${MessageType[msgIn.type]} ${msgIn.value}`);
 
-  const response = await socket.send(fileData);
+  let response: Buffer = Buffer.alloc(0);
+  await stats.measure(filePath, async () => {
+    response = await socket.send(fileData);
+  });
 
-  const decodedResponse = decodeMessage(response, false);
-  if (!decodedResponse) {
-    throw new Error(`Failed to decode response for file: ${filePath}`);
-  }
+  const msgOut = decodeMessage(response);
+  console.log(`[node] --> ${MessageType[msgOut.type]} ${msgOut.value}`);
 
   return true;
 }

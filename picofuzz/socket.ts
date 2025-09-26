@@ -30,9 +30,7 @@ export class Socket {
 
   private constructor(
     private readonly socket: net.Socket
-  ) {
-
-  }
+  ) {}
 
   async send(data: Buffer | Uint8Array): Promise<Buffer> {
     // prepare to read response.
@@ -61,6 +59,7 @@ export class Socket {
         // we now have everything, we can resolve the promise.
         const responseData = responseBuffer.subarray(LEN_PREFIX_BYTES, expectedLength + LEN_PREFIX_BYTES);
         socket.off('data', readResponse);
+        socket.off('error', reject);
         socket.off('close', closeHandler);
         resolve(responseData);
       }
@@ -78,6 +77,10 @@ export class Socket {
     this.socket.write(message);
 
     return await response;
+  }
+
+  close() {
+    this.socket.end();
   }
 }
 
