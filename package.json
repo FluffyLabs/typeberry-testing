@@ -11,7 +11,7 @@
     "perf-graph"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && npm run build -w perf-graph",
     "qa-fix": "npm run format && npm run lint",
     "qa": "biome ci",
     "format": "biome format --write",

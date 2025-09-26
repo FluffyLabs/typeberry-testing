@@ -43,6 +43,44 @@ export class Stats {
 
     return s.join("\n");
   }
+
+  aggregateToCsvRow() {
+    const aggregated: bigint[] = [];
+    for (const [key, values] of this.stats) {
+      if (!key.endsWith(GENESIS_IMPORT)) {
+        aggregated.push(...values);
+      }
+    }
+    const stats = calculateBigIntStats(aggregated);
+    const cols = statsToColumns(stats);
+    cols.unshift(new Date().toISOString());
+    cols.unshift(this.peer);
+
+    return cols.join(",");
+  }
+}
+
+function statsToColumns(stats: BigIntStats) {
+  return [
+    stats.count,
+    stats.sum,
+    stats.mean,
+    stats.median,
+    stats.min,
+    stats.max,
+    stats.range,
+    stats.standardDeviation,
+    stats.variance,
+    stats.percentiles.p1,
+    stats.percentiles.p5,
+    stats.percentiles.p10,
+    stats.percentiles.p25,
+    stats.percentiles.p50,
+    stats.percentiles.p75,
+    stats.percentiles.p90,
+    stats.percentiles.p95,
+    stats.percentiles.p99,
+  ].map((x) => `${x}`);
 }
 
 function renderStats(key: string, stats: BigIntStats) {
