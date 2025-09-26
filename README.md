@@ -45,16 +45,29 @@ npm test
 
 ```bash
 # Docker functionality tests
-npx tsx --test tests/docker-works.test.ts
+npm exec tsx --test tests/docker-works.test.ts
 
 # NPM package tests
-npx tsx --test tests/npm-works.test.ts
+npm exec tsx --test tests/npm-works.test.ts
 
 # Minifuzz tests
-npx tsx --test tests/minifuzz/burn.test.ts
-npx tsx --test tests/minifuzz/faulty.test.ts
-npx tsx --test tests/minifuzz/forks.test.ts
-npx tsx --test tests/minifuzz/no_forks.test.ts
+npm exec tsx --test tests/minifuzz/burn.test.ts
+npm exec tsx --test tests/minifuzz/faulty.test.ts
+npm exec tsx --test tests/minifuzz/forks.test.ts
+npm exec tsx --test tests/minifuzz/no_forks.test.ts
+```
+
+### Running Picofuzz
+
+Picofuzz is a lightweight fuzzing tool that sends prepared fuzz messages using the Fuzz protocol:
+
+```bash
+# Run picofuzz directly
+npm exec tsx picofuzz/index.ts <directory> <socket> [repeat]
+
+# Using Docker
+docker build -t picofuzz .
+docker run picofuzz <directory> <socket> [repeat]
 ```
 
 ## Project Structure
@@ -68,8 +81,13 @@ npx tsx --test tests/minifuzz/no_forks.test.ts
 │       ├── faulty.test.ts       # Fault tolerance tests
 │       ├── forks.test.ts        # Fork handling tests
 │       └── no_forks.test.ts     # Single-process tests
-├── runner/                      # Test runner utilities
-└── utils/                       # Shared utilities
+├── picofuzz/                    # Lightweight fuzzing tool
+│   ├── index.ts                 # Main entry point
+│   ├── args.ts                  # Argument parsing
+│   ├── files.ts                 # File processing utilities
+│   ├── socket.ts                # Socket communication
+│   ├── stats.ts                 # Statistics collection
+│   └── package.json             # Package configuration
 ```
 
 ## Contributing

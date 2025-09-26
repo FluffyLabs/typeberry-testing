@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, it } from "node:test";
+import { createSharedVolume, minifuzz, typeberry } from "../common.js";
 import type { ExternalProcess } from "../external-process.js";
-import { createSharedVolume, minifuzz, typeberry } from "./common.js";
 
 const TIMEOUT_MINUTES = 15;
 
