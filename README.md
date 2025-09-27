@@ -5,6 +5,7 @@ E2E tests for [Typeberry](https://github.com/FluffyLabs/typeberry) - a JAM servi
 ## Status
 
 [![Minifuzz Tests](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/minifuzz.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/minifuzz.yml)
+[![Picofuzz Tests](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/picofuzz.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/picofuzz.yml)
 [![NPM Works](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/npm-works.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/npm-works.yml)
 [![Docker Works](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/docker-works.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/docker-works.yml)
 
@@ -12,6 +13,10 @@ E2E tests for [Typeberry](https://github.com/FluffyLabs/typeberry) - a JAM servi
 |---------------|--------|-------------|
 | **Docker Works** | [![Docker Works](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/docker-works.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/docker-works.yml) | Tests Docker image functionality and basic operations |
 | **NPM Works** | [![NPM Works](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/npm-works.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/npm-works.yml) | Tests NPM package installation and basic functionality |
+| **Picofuzz Fallback** | [![Picofuzz Tests](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/picofuzz.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/picofuzz.yml) | Tests fallback functionality using prepared fuzz messages |
+| **Picofuzz Safrole** | [![Picofuzz Tests](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/picofuzz.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/picofuzz.yml) | Tests Safrole protocol implementation with fuzzing |
+| **Picofuzz Storage** | [![Picofuzz Tests](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/picofuzz.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/picofuzz.yml) | Tests storage functionality with comprehensive fuzzing |
+| **Picofuzz Storage Light** | [![Picofuzz Tests](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/picofuzz.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/picofuzz.yml) | Tests storage functionality with lightweight fuzzing |
 | **Minifuzz Burn** | [![Minifuzz Burn Test](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/minifuzz.yml/badge.svg?job=minifuzz-burn)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/minifuzz.yml) | Burn-in testing for extended fuzzing operations |
 | **Minifuzz Faulty** | [![Minifuzz Faulty Test](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/minifuzz.yml/badge.svg?job=minifuzz-faulty)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/minifuzz.yml) | Tests error handling and fault tolerance |
 | **Minifuzz Forks** | [![Minifuzz Forks Test](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/minifuzz.yml/badge.svg?job=minifuzz-forks)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/minifuzz.yml) | Tests fork handling and process management |
@@ -50,6 +55,12 @@ npm exec tsx --test tests/docker-works.test.ts
 # NPM package tests
 npm exec tsx --test tests/npm-works.test.ts
 
+# Picofuzz tests
+npm exec tsx --test tests/picofuzz/fallback.test.ts
+npm exec tsx --test tests/picofuzz/safrole.test.ts
+npm exec tsx --test tests/picofuzz/storage.test.ts
+npm exec tsx --test tests/picofuzz/storage_light.test.ts
+
 # Minifuzz tests
 npm exec tsx --test tests/minifuzz/burn.test.ts
 npm exec tsx --test tests/minifuzz/faulty.test.ts
@@ -76,7 +87,13 @@ docker run picofuzz <directory> <socket> [repeat]
 ├── tests/
 │   ├── docker-works.test.ts     # Docker image functionality tests
 │   ├── npm-works.test.ts        # NPM package tests
-│   └── minifuzz/                # Fuzzing-related tests
+│   ├── picofuzz/                # Lightweight fuzzing tests using prepared messages
+│   │   ├── common.ts            # Common utilities for picofuzz tests
+│   │   ├── fallback.test.ts     # Fallback functionality tests
+│   │   ├── safrole.test.ts      # Safrole protocol tests
+│   │   ├── storage.test.ts      # Storage functionality tests
+│   │   └── storage_light.test.ts # Lightweight storage tests
+│   └── minifuzz/                # Comprehensive fuzzing tests
 │       ├── burn.test.ts         # Burn-in testing
 │       ├── faulty.test.ts       # Fault tolerance tests
 │       ├── forks.test.ts        # Fork handling tests

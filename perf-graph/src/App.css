@@ -3,6 +3,7 @@
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
+  width: 100%;
 }
 
 .logo {
@@ -39,4 +40,10 @@
 
 .read-the-docs {
   color: #888;
+}
+
+.app {
+  display: grid;
+  gap: 25px;
+  grid-template-columns: auto auto;
 }

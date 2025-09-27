@@ -78,6 +78,21 @@ jobs:
           name: picofuzz-data
           path: ./picofuzz-data
 
+      - name: Download previous CSV files
+        uses: actions/download-artifact@v4
+        with:
+          name: picofuzz-csv-${{ matrix.test }}
+          path: ./
+        continue-on-error: true
+
       - name: Run picofuzz ${{ matrix.test }}
         run: |
           npm exec tsx --test tests/picofuzz/${{ matrix.test }}.test.ts
+
+      - name: Upload CSV results
+        uses: actions/upload-artifact@v4
+        with:
+          name: picofuzz-csv-${{ matrix.test }}
+          path: ${{ matrix.test }}.csv
+          retention-days: 90
+        if: always()
