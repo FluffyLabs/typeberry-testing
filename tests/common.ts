@@ -144,7 +144,7 @@ export async function picofuzz({
     "-v",
     `${sharedVolume}:/shared`,
     "picofuzz",
-    `--stats=${statsFile}`,
+    ...(statsFile ? [`--stats=${statsFile}`] : []),
     `--repeat=${repeat}`,
     `/app/${dir}`,
     SOCKET_PATH,
