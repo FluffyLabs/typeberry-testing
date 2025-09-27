@@ -1,5 +1,5 @@
 import { describe, it } from "node:test";
-import { ExternalProcess } from "../runner/external-process.js";
+import { ExternalProcess } from "./external-process.js";
 
 const TEST_TIMEOUT = 10_000;
 

@@ -1,11 +1,12 @@
 import { afterEach, beforeEach, describe, it } from "node:test";
-import type { ExternalProcess } from "../../runner/external-process.js";
-import { createSharedVolume, minifuzz, typeberry } from "./common.js";
+import { createSharedVolume, minifuzz, typeberry } from "../common.js";
+import type { ExternalProcess } from "../external-process.js";
 
 const TIMEOUT_MINUTES = 15;
+const timeout = TIMEOUT_MINUTES * 60 * 1_000;
 
 const EXAMPLES_DIR = "jam-conformance/fuzz-proto/examples/v1/forks";
-describe("Burn mode", { timeout: TIMEOUT_MINUTES * 60 * 1_000 }, () => {
+describe("Burn mode", { timeout }, () => {
   let typeberryProc: ExternalProcess | null = null;
   let minifuzzProc: ExternalProcess | null = null;
   let sharedVolume = {
@@ -31,7 +32,7 @@ describe("Burn mode", { timeout: TIMEOUT_MINUTES * 60 * 1_000 }, () => {
 
   it("should keep reasonable resources when running minifuzz many times", async () => {
     typeberryProc = await typeberry({
-      timeout: TIMEOUT_MINUTES * 60 * 1_000,
+      timeout,
       sharedVolume: sharedVolume.name,
     });
 
@@ -39,6 +40,7 @@ describe("Burn mode", { timeout: TIMEOUT_MINUTES * 60 * 1_000 }, () => {
     console.time("minifuzz");
     for (let i = 0; i < NO_OF_ROUNDS; ++i) {
       minifuzzProc = await minifuzz({
+        timeout,
         dir: EXAMPLES_DIR,
         stopAfter: 100,
         sharedVolume: sharedVolume.name,

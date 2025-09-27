@@ -8,7 +8,7 @@ PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 
 echo "Building minifuzz Docker image..."
 cd "$PROJECT_DIR"
-docker build -f utils/minifuzz.Dockerfile -t minifuzz .
+docker build -f minifuzz/minifuzz.Dockerfile -t minifuzz .
 
 echo "Running minifuzz --help..."
 docker run --rm minifuzz --help
