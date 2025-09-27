@@ -4,8 +4,6 @@ import { ExternalProcess } from "./external-process.js";
 const SOCKET_PATH = "/shared/jam_target.sock";
 const SHARED_VOLUME = "jam-ipc-volume";
 
-const TEST_TIMEOUT = 120_000;
-
 const DOCKER_OPTIONS = [
   "--cpu-shares",
   "2048",
@@ -66,14 +64,14 @@ export function createSharedVolume(name = "") {
 }
 
 export async function typeberry({
+  timeout,
   dockerArgs = [],
   sharedVolume = SHARED_VOLUME,
-  timeout = TEST_TIMEOUT,
 }: {
+  timeout: number;
   dockerArgs?: string[];
   sharedVolume?: string;
-  timeout?: number;
-} = {}) {
+}) {
   const typeberry = ExternalProcess.spawn(
     "typeberry",
     "docker",
@@ -86,7 +84,7 @@ export async function typeberry({
     "ghcr.io/fluffylabs/typeberry:latest",
     "fuzz-target",
     SOCKET_PATH,
-  ).terminateAfter(timeout);
+  ).terminateAfter(timeout - 30_000);
   await typeberry.waitForMessage(/IPC server is listening/);
   return typeberry;
 }
@@ -95,12 +93,12 @@ export async function minifuzz({
   dir,
   stopAfter = 20,
   sharedVolume = SHARED_VOLUME,
-  timeout = TEST_TIMEOUT,
+  timeout,
 }: {
   dir: string;
   stopAfter?: number;
   sharedVolume?: string;
-  timeout?: number;
+  timeout: number;
 }) {
   return ExternalProcess.spawn(
     "minifuzz",
@@ -127,12 +125,12 @@ export async function picofuzz({
   dir,
   repeat = 1,
   sharedVolume = SHARED_VOLUME,
-  timeout = TEST_TIMEOUT,
+  timeout,
 }: {
   dir: string;
   repeat?: number;
   sharedVolume?: string;
-  timeout?: number;
+  timeout: number;
 }) {
   return ExternalProcess.spawn(
     "picofuzz",

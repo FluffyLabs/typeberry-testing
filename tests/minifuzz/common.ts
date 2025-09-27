@@ -2,10 +2,10 @@ import { afterEach, beforeEach, describe, it } from "node:test";
 import { createSharedVolume, minifuzz, typeberry } from "../common.js";
 import type { ExternalProcess } from "../external-process.js";
 
-const TEST_TIMEOUT = 120_000;
+const timeout = 5 * 60 * 1_000;
 
 export function runMinifuzzTest(name: string, directory: string, steps: number) {
-  describe(`[minifuzz] ${name}`, { timeout: TEST_TIMEOUT }, () => {
+  describe(`[minifuzz] ${name}`, { timeout }, () => {
     let typeberryProc: ExternalProcess | null = null;
     let minifuzzProc: ExternalProcess | null = null;
     let sharedVolume = {
@@ -31,9 +31,11 @@ export function runMinifuzzTest(name: string, directory: string, steps: number) 
 
     it(`should run ${name} tests`, async () => {
       typeberryProc = await typeberry({
+        timeout,
         sharedVolume: sharedVolume.name,
       });
       minifuzzProc = await minifuzz({
+        timeout,
         dir: directory,
         stopAfter: steps,
         sharedVolume: sharedVolume.name,
