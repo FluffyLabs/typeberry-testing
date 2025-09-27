@@ -61,6 +61,7 @@
     "includes": [
       "**",
       "!jam-conformance/**",
+      "!jam-test-vectors/**",
       "!**/dist/**/*",
       "!**/benchmarks/**/output/**/*",
       "!**/test-vectors/**/*",

@@ -4,9 +4,11 @@
   "description": "Typeberry E2E testing",
   "main": "index.js",
   "type": "module",
-  "directories": {
-    "test": "tests"
-  },
+  "workspaces": [
+    "./minifuzz",
+    "./picofuzz",
+    "./tests"
+  ],
   "scripts": {
     "build": "tsc",
     "qa-fix": "npm run format && npm run lint",
@@ -14,7 +16,6 @@
     "format": "biome format --write",
     "lint": "biome check --write && biome lint --write",
     "fetch-typeberry": "docker pull --platform=linux/amd64 ghcr.io/fluffylabs/typeberry:latest",
-    "build-minifuzz": "./utils/minifuzz-docker-build.sh",
     "test": "tsx --test $(find . -type d -name node_modules -prune -type f -o -name '*.test.ts' | tr '\\n' ' ')"
   },
   "repository": {

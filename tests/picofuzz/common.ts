@@ -1,13 +1,13 @@
 import { afterEach, beforeEach, describe, it } from "node:test";
-import { createSharedVolume, minifuzz, typeberry } from "../common.js";
+import { createSharedVolume, picofuzz, typeberry } from "../common.js";
 import type { ExternalProcess } from "../external-process.js";
 
-const timeout = 5 * 60 * 1_000;
+const timeout = 10 * 60 * 1000;
 
-export function runMinifuzzTest(name: string, directory: string, steps: number) {
-  describe(`[minifuzz] ${name}`, { timeout }, () => {
+export function runPicofuzzTest(name: string, directory: string, repeat: number) {
+  describe(`[picofuzz] ${name}`, { timeout }, () => {
     let typeberryProc: ExternalProcess | null = null;
-    let minifuzzProc: ExternalProcess | null = null;
+    let picofuzzProc: ExternalProcess | null = null;
     let sharedVolume = {
       name: "none",
       stop: () => {},
@@ -21,7 +21,7 @@ export function runMinifuzzTest(name: string, directory: string, steps: number) 
       // terminate the processes
       try {
         await typeberryProc?.terminate();
-        await minifuzzProc?.terminate();
+        await picofuzzProc?.terminate();
       } catch {
         // ignore
       }
@@ -34,16 +34,14 @@ export function runMinifuzzTest(name: string, directory: string, steps: number) 
         timeout,
         sharedVolume: sharedVolume.name,
       });
-      minifuzzProc = await minifuzz({
+      picofuzzProc = await picofuzz({
         timeout,
         dir: directory,
-        stopAfter: steps,
+        repeat: repeat,
         sharedVolume: sharedVolume.name,
       });
 
-      await minifuzzProc.waitForMessage(/Stopping after.*as requested/);
-      console.info("✅ Minifuzz finished");
-      await minifuzzProc.cleanExit;
+      await picofuzzProc.cleanExit;
       console.info("✅ Importing successful");
     });
   });

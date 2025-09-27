@@ -19,6 +19,10 @@ on:
     # Midnight Europe/Warsaw (22:00 UTC previous day)
     - cron: '0 22 * * *'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
 jobs:
   init:
     name: Initializing environment
@@ -37,12 +41,15 @@ jobs:
       - name: Fetch Typeberry Docker image
         run: npm run fetch-typeberry
       - name: Build minifuzz
-        run: npm run build-minifuzz
+        run: npm run build -w minifuzz
 
-  minifuzz-burn:
+  minifuzz:
     needs: init
-    name: Minifuzz Burn Test
+    name: Minifuzz Tests
     runs-on: self-hosted
+    strategy:
+      matrix:
+        test: [burn, faulty, forks, no_forks]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -57,72 +64,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run Minifuzz Burn test
+      - name: Run Minifuzz ${{ matrix.test }} test
         run: |
-          npm exec tsx --test tests/minifuzz/burn.test.ts
-
-  minifuzz-faulty:
-    needs: init
-    name: Minifuzz Faulty Test
-    runs-on: self-hosted
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: 'true'
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run Minifuzz Faulty test
-        run: |
-          npm exec tsx --test tests/minifuzz/faulty.test.ts
-
-  minifuzz-forks:
-    needs: init
-    name: Minifuzz Forks Test
-    runs-on: self-hosted
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: 'true'
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run Minifuzz Forks test
-        run: |
-          npm exec tsx --test tests/minifuzz/forks.test.ts
-
-  minifuzz-no-forks:
-    needs: init
-    name: Minifuzz No Forks Test
-    runs-on: self-hosted
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: 'true'
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run Minifuzz No Forks test
-        run: |
-          npm exec tsx --test tests/minifuzz/no_forks.test.ts
+          npm exec tsx --test tests/minifuzz/${{ matrix.test }}.test.ts
