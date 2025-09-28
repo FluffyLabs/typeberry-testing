@@ -39,6 +39,7 @@ export function runPicofuzzTest(name: string, directory: string, repeat: number)
         dir: directory,
         repeat: repeat,
         sharedVolume: sharedVolume.name,
+        statsFile: `${name}.csv`,
       });
 
       await picofuzzProc.cleanExit;

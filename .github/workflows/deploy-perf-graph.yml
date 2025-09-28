@@ -1,0 +1,76 @@
+name: Deploy Performance Graph
+
+on:
+  workflow_run:
+    workflows: ["Picofuzz Tests"]
+    types:
+      - completed
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    if: ${{ (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main') || github.event_name == 'workflow_dispatch' }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: perf-graph/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: ./perf-graph
+
+      - name: Download picofuzz CSV artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: picofuzz-csv-*
+          path: ./csv-artifacts
+          merge-multiple: true
+        continue-on-error: true
+
+      - name: Copy CSV files to public directory
+        run: |
+          # Create public directory if it doesn't exist
+          mkdir -p ./perf-graph/public
+
+          # Copy CSV files from artifacts if they exist
+          if [ -d "./csv-artifacts" ]; then
+            echo "Copying CSV files from artifacts..."
+            cp ./csv-artifacts/*.csv ./perf-graph/public/ 2>/dev/null || echo "No CSV files found in artifacts"
+          fi
+
+          # List what's in public directory
+          echo "Files in public directory:"
+          ls -la ./perf-graph/public/
+
+      - name: Build project
+        run: npm run build
+        working-directory: ./perf-graph
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./perf-graph/dist
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

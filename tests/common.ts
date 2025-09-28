@@ -126,11 +126,13 @@ export async function picofuzz({
   repeat = 1,
   sharedVolume = SHARED_VOLUME,
   timeout,
+  statsFile,
 }: {
   dir: string;
   repeat?: number;
   sharedVolume?: string;
   timeout: number;
+  statsFile?: string;
 }) {
   return ExternalProcess.spawn(
     "picofuzz",
@@ -142,8 +144,9 @@ export async function picofuzz({
     "-v",
     `${sharedVolume}:/shared`,
     "picofuzz",
+    ...(statsFile ? [`--stats=${statsFile}`] : []),
+    `--repeat=${repeat}`,
     `/app/${dir}`,
     SOCKET_PATH,
-    `${repeat}`,
   ).terminateAfter(timeout - 10_000);
 }
