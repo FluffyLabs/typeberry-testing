@@ -8,10 +8,14 @@ E2E tests for [Typeberry](https://github.com/FluffyLabs/typeberry) - a JAM servi
 [![Picofuzz Tests](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/picofuzz.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/picofuzz.yml)
 [![NPM Works](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/npm-works.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/npm-works.yml)
 [![Docker Works](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/docker-works.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/docker-works.yml)
+[![Docker Conformance](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/docker-conformance.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/docker-conformance.yml)
+[![Docker Test Vectors](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/docker-test-vectors.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/docker-test-vectors.yml)
 
 | Test Category | Status | Description |
 |---------------|--------|-------------|
 | **Docker Works** | [![Docker Works](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/docker-works.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/docker-works.yml) | Tests Docker image functionality and basic operations |
+| **Docker Conformance** | [![Docker Conformance](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/docker-conformance.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/docker-conformance.yml) | Tests JAM conformance using Docker with latest conformance test suite |
+| **Docker Test Vectors** | [![Docker Test Vectors](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/docker-test-vectors.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/docker-test-vectors.yml) | Tests W3F test vectors using Docker with latest test suite |
 | **NPM Works** | [![NPM Works](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/npm-works.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/npm-works.yml) | Tests NPM package installation and basic functionality |
 | **Picofuzz Fallback** | [![Picofuzz Tests](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/picofuzz.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/picofuzz.yml) | Tests fallback functionality using prepared fuzz messages |
 | **Picofuzz Safrole** | [![Picofuzz Tests](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/picofuzz.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/picofuzz.yml) | Tests Safrole protocol implementation with fuzzing |
@@ -52,6 +56,12 @@ npm test
 # Docker functionality tests
 npm exec tsx --test tests/docker-works.test.ts
 
+# Docker conformance tests
+npm exec tsx --test tests/docker-conformance.test.ts
+
+# Docker test vectors
+npm exec tsx --test tests/docker-test-vectors.test.ts
+
 # NPM package tests
 npm exec tsx --test tests/npm-works.test.ts
 
@@ -86,6 +96,8 @@ docker run picofuzz <directory> <socket> [repeat]
 ```
 ├── tests/
 │   ├── docker-works.test.ts     # Docker image functionality tests
+│   ├── docker-conformance.test.ts # JAM conformance tests using Docker
+│   ├── docker-test-vectors.test.ts # W3F test vectors using Docker
 │   ├── npm-works.test.ts        # NPM package tests
 │   ├── picofuzz/                # Lightweight fuzzing tests using prepared messages
 │   │   ├── common.ts            # Common utilities for picofuzz tests
