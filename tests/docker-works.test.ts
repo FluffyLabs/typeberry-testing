@@ -9,6 +9,7 @@ describe("Docker image works", { timeout: TEST_TIMEOUT }, () => {
       "docker",
       "docker",
       "run",
+      "--rm",
       "ghcr.io/fluffylabs/typeberry:latest",
       "--help",
     ).terminateAfter(TEST_TIMEOUT);
@@ -21,6 +22,7 @@ describe("Docker image works", { timeout: TEST_TIMEOUT }, () => {
       "docker",
       "docker",
       "run",
+      "--rm",
       "ghcr.io/fluffylabs/typeberry:latest",
       "fuzz-target",
     ).terminateAfter(TEST_TIMEOUT);

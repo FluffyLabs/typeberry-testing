@@ -141,6 +141,7 @@ export async function picofuzz({
     "--rm",
     "-v",
     `${process.cwd()}/picofuzz-data:/app/picofuzz-data:ro`,
+    "-v",
     `${process.cwd()}/picofuzz-result:/app/picofuzz-result`,
     "-v",
     `${sharedVolume}:/shared`,

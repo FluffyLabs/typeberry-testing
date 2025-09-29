@@ -1,4 +1,4 @@
-name: Picofuzz Tests
+name: Docker Conformance
 
 on:
   push:
@@ -40,25 +40,11 @@ jobs:
         run: npm ci
       - name: Fetch Typeberry Docker image
         run: npm run fetch-typeberry
-      - name: Build picofuzz
-        run: npm run build-docker -w @fluffylabs/picofuzz
-      - name: Prepare test cases
-        run: npm run prepare-data -w @fluffylabs/picofuzz
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: picofuzz-data
-          path: ./picofuzz-data
 
-  picofuzz:
+  docker-conformance:
     needs: init
-    name: Picofuzz Test
-    runs-on: [self-hosted, perf]
-    strategy:
-      fail-fast: false
-      matrix:
-        test: [fallback, safrole, storage, storage_light]
-
+    name: Docker Conformance Test
+    runs-on: self-hosted
     steps:
       - uses: actions/checkout@v4
         with:
@@ -73,29 +59,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Download picofuzz-data
-        uses: actions/download-artifact@v4
-        with:
-          name: picofuzz-data
-          path: ./picofuzz-data
-
-      - run: mkdir ./picofuzz-result && chmod 777 ./picofuzz-result
-
-      - name: Download previous CSV files
-        uses: actions/download-artifact@v4
-        with:
-          name: picofuzz-csv-${{ matrix.test }}
-          path: ./picofuzz-result/
-        continue-on-error: true
-
-      - name: Run picofuzz ${{ matrix.test }}
+      - name: Run Docker Conformance test
         run: |
-          npm exec tsx --test tests/picofuzz/${{ matrix.test }}.test.ts
-
-      - name: Upload CSV results
-        uses: actions/upload-artifact@v4
-        with:
-          name: picofuzz-csv-${{ matrix.test }}
-          path: ./picofuzz-result/${{ matrix.test }}.csv
-          retention-days: 90
-        if: always()
+          npm exec tsx --test tests/docker-conformance.test.ts
