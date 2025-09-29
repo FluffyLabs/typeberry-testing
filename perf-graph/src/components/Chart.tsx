@@ -147,7 +147,7 @@ export function Chart({ name }: { name: string }) {
             <Line type="monotone" dataKey="max" stroke="#dc2626" name="Max" />
             <Area type="monotone" dataKey="mean" stroke="#8884d8" name="Mean" />
             <Line type="monotone" dataKey="median" stroke="#82ca9d" name="Median" />
-            <Bar type="monotone" dataKey="p95" fill="#ff7300" barSize={5} name="95th Percentile" />
+            <Bar dataKey="p95" fill="#ff7300" barSize={5} name="95th Percentile" />
             <Line type="monotone" dataKey="p99" stroke="#ffc658" name="99th Percentile" />
           </ComposedChart>
         </ResponsiveContainer>
