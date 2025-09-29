@@ -82,11 +82,16 @@ jobs:
       - name: Get previous run ID
         id: previous-run
         run: |
+          WORKFLOW_ID=$(curl -s \
+            -H "Authorization: token $GITHUB_TOKEN" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/workflows" \
+            | jq -r '.workflows[] | select(.name == "Picofuzz Tests") | .id')
           PREVIOUS_RUN_ID=$(curl -s \
             -H "Authorization: token $GITHUB_TOKEN" \
             -H "Accept: application/vnd.github.v3+json" \
-            "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/workflows/Picofuzz%20Tests/runs?branch=main&status=success&per_page=2" \
-            | jq -r '.[1].id')
+            "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/workflows/$WORKFLOW_ID/runs?branch=main&status=success&per_page=2" \
+            | jq -r '.workflow_runs[1].id')
           echo "run-id=$PREVIOUS_RUN_ID" >> $GITHUB_OUTPUT
         env:
           GH_TOKEN: ${{ github.token }}
