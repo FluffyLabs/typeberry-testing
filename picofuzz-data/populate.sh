@@ -4,7 +4,7 @@ cd "$(dirname "${BASH_SOURCE[0]}")"
 
 set -ex
 
-CONVERT="npx @typeberry/convert@next --"
+CONVERT="npm exec @typeberry/convert --"
 SOURCE=../jam-test-vectors/traces
 DEST=../picofuzz-data
 
