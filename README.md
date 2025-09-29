@@ -1,6 +1,6 @@
 # Typeberry Testing
 
-E2E tests for [Typeberry](https://github.com/FluffyLabs/typeberry) - a JAM service implementation by Fluffy Labs.
+E2E tests for [Typeberry](https://github.com/FluffyLabs/typeberry) - a JAM node implementation by Fluffy Labs.
 
 ## Status
 
@@ -95,28 +95,28 @@ docker run picofuzz <directory> <socket> [repeat]
 
 ```
 ├── tests/
-│   ├── docker-works.test.ts     # Docker image functionality tests
-│   ├── docker-conformance.test.ts # JAM conformance tests using Docker
+│   ├── docker-works.test.ts        # Docker image functionality tests
+│   ├── docker-conformance.test.ts  # JAM conformance tests using Docker
 │   ├── docker-test-vectors.test.ts # W3F test vectors using Docker
-│   ├── npm-works.test.ts        # NPM package tests
-│   ├── picofuzz/                # Lightweight fuzzing tests using prepared messages
-│   │   ├── common.ts            # Common utilities for picofuzz tests
-│   │   ├── fallback.test.ts     # Fallback functionality tests
-│   │   ├── safrole.test.ts      # Safrole protocol tests
-│   │   ├── storage.test.ts      # Storage functionality tests
-│   │   └── storage_light.test.ts # Lightweight storage tests
-│   └── minifuzz/                # Comprehensive fuzzing tests
-│       ├── burn.test.ts         # Burn-in testing
-│       ├── faulty.test.ts       # Fault tolerance tests
-│       ├── forks.test.ts        # Fork handling tests
-│       └── no_forks.test.ts     # Single-process tests
-├── picofuzz/                    # Lightweight fuzzing tool
-│   ├── index.ts                 # Main entry point
-│   ├── args.ts                  # Argument parsing
-│   ├── files.ts                 # File processing utilities
-│   ├── socket.ts                # Socket communication
-│   ├── stats.ts                 # Statistics collection
-│   └── package.json             # Package configuration
+│   ├── npm-works.test.ts           # NPM package tests
+│   ├── picofuzz/                   # Performance testing
+│   │   ├── common.ts               # Common utilities for picofuzz tests
+│   │   ├── fallback.test.ts        # Fallback performance
+│   │   ├── safrole.test.ts         # Safrole performance
+│   │   ├── storage.test.ts         # Storage performance
+│   │   └── storage_light.test.ts   # Lightweight storage performance
+│   └── minifuzz/                   # Minifuzz compatibility
+│       ├── burn.test.ts            # Repeated execution
+│       ├── faulty.test.ts          # Fault tolerance tests
+│       ├── forks.test.ts           # Fork handling tests
+│       └── no_forks.test.ts        # Single-chain tests
+├── picofuzz/                       # Performance testing
+│   ├── index.ts                    # Main entry point
+│   ├── args.ts                     # Argument parsing
+│   ├── files.ts                    # File processing utilities
+│   ├── socket.ts                   # Socket communication
+│   ├── stats.ts                    # Statistics collection
+│   └── package.json                # Package configuration
 ```
 
 ## Contributing
