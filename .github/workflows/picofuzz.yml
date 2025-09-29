@@ -55,6 +55,7 @@ jobs:
     name: Picofuzz Test
     runs-on: [self-hosted, perf]
     strategy:
+      fail-fast: false
       matrix:
         test: [fallback, safrole, storage, storage_light]
 

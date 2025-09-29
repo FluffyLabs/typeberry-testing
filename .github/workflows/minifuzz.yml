@@ -48,6 +48,7 @@ jobs:
     name: Minifuzz Tests
     runs-on: self-hosted
     strategy:
+      fail-fast: false
       matrix:
         test: [burn, faulty, forks, no_forks]
     steps:
