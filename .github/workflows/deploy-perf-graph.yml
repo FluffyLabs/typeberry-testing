@@ -6,6 +6,11 @@ on:
     types: [completed]
     branches: [main]
   workflow_dispatch:
+    inputs:
+      workflow_run_id:
+        description: Workflow run ID which contains CSV artifacts.
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -40,7 +45,9 @@ jobs:
         with:
           pattern: picofuzz-csv-*
           path: ./csv-artifacts
+          github-token: ${{ secrets.ARTIFACTS_PAT }}
           merge-multiple: true
+          run-id: ${{ github.event.workflow_run.id || inputs.workflow_run_id }}
         continue-on-error: true
 
       - name: Copy CSV files to public directory
