@@ -79,13 +79,27 @@ jobs:
           name: picofuzz-data
           path: ./picofuzz-data
 
+      - name: Get previous run ID
+        id: previous-run
+        run: |
+          PREVIOUS_RUN_ID=$(gh run list \
+            --workflow="${{ github.workflow }}" \
+            --branch="main" \
+            --status=success \
+            --limit=2 \
+            --json databaseId \
+            --jq '.[1].databaseId')
+          echo "run-id=$PREVIOUS_RUN_ID" >> $GITHUB_OUTPUT
+        env:
+          GH_TOKEN: ${{ github.token }}
       - run: mkdir ./picofuzz-result && chmod 777 ./picofuzz-result
-
       - name: Download previous CSV files
         uses: actions/download-artifact@v4
         with:
           name: picofuzz-csv-${{ matrix.test }}
           path: ./picofuzz-result/
+          github-token: ${{ secrets.ARTIFACTS_PAT }}
+          run-id: ${{ steps.previous-run.outputs.run-id }}
         continue-on-error: true
 
       - name: Run picofuzz ${{ matrix.test }}
