@@ -45,6 +45,7 @@ jobs:
         with:
           pattern: picofuzz-csv-*
           path: ./csv-artifacts
+          github-token: ${{ secrets.ARTIFACTS_PAT }}
           merge-multiple: true
           run-id: ${{ github.event.workflow_run.id || inputs.workflow_run_id }}
         continue-on-error: true
