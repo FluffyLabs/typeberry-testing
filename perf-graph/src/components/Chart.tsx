@@ -1,5 +1,16 @@
 import { useEffect, useState } from "react";
-import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import {
+  Area,
+  Bar,
+  CartesianGrid,
+  ComposedChart,
+  Legend,
+  Line,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 interface PerformanceData {
   projectName: string;
@@ -24,6 +35,9 @@ interface PerformanceData {
   p99: number;
   timestamp: number;
 }
+
+const UNIT = "ms";
+const DIV = 1_000_000;
 
 export function Chart({ name }: { name: string }) {
   const [data, setData] = useState<PerformanceData[]>([]);
@@ -60,27 +74,30 @@ export function Chart({ name }: { name: string }) {
             p99,
           ] = line.split(",");
 
+          const parse = (v: string) => Number.parseFloat((Number.parseInt(v) / DIV).toFixed(1));
+          const parseF = (v: string) => Number.parseFloat(v) / DIV;
+
           return {
             projectName,
             date,
-            count: Number.parseFloat(count),
-            sum: Number.parseFloat(sum),
-            mean: Number.parseFloat(mean),
-            median: Number.parseFloat(median),
-            min: Number.parseFloat(min),
-            max: Number.parseFloat(max),
-            range: Number.parseFloat(range),
-            stdDeviation: Number.parseFloat(stdDeviation),
-            variance: Number.parseFloat(variance),
-            p1: Number.parseFloat(p1),
-            p5: Number.parseFloat(p5),
-            p10: Number.parseFloat(p10),
-            p25: Number.parseFloat(p25),
-            p50: Number.parseFloat(p50),
-            p75: Number.parseFloat(p75),
-            p90: Number.parseFloat(p90),
-            p95: Number.parseFloat(p95),
-            p99: Number.parseFloat(p99),
+            count: parse(count),
+            sum: parse(sum),
+            mean: parse(mean),
+            median: parse(median),
+            min: parse(min),
+            max: parse(max),
+            range: parse(range),
+            stdDeviation: parseF(stdDeviation),
+            variance: parseF(variance),
+            p1: parse(p1),
+            p5: parse(p5),
+            p10: parse(p10),
+            p25: parse(p25),
+            p50: parse(p50),
+            p75: parse(p75),
+            p90: parse(p90),
+            p95: parse(p95),
+            p99: parse(p99),
             timestamp: new Date(date).getTime(),
           };
         });
@@ -109,9 +126,9 @@ export function Chart({ name }: { name: string }) {
     <div style={{ padding: "20px" }}>
       <h3>{name}</h3>
       <div style={{ marginBottom: "30px" }}>
-        <h4>Block import time (nanoseconds)</h4>
+        <h4>Block import time ({UNIT})</h4>
         <ResponsiveContainer width="100%" height={400}>
-          <LineChart data={data}>
+          <ComposedChart data={data}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis
               dataKey="timestamp"
@@ -128,11 +145,11 @@ export function Chart({ name }: { name: string }) {
             <Legend />
             <Line type="monotone" dataKey="min" stroke="#2563eb" name="Min" />
             <Line type="monotone" dataKey="max" stroke="#dc2626" name="Max" />
-            <Line type="monotone" dataKey="mean" stroke="#8884d8" name="Mean" />
+            <Area type="monotone" dataKey="mean" stroke="#8884d8" name="Mean" />
             <Line type="monotone" dataKey="median" stroke="#82ca9d" name="Median" />
-            <Line type="monotone" dataKey="p95" stroke="#ffc658" name="95th Percentile" />
-            <Line type="monotone" dataKey="p99" stroke="#ff7300" name="99th Percentile" />
-          </LineChart>
+            <Bar dataKey="p95" fill="#ff7300" barSize={5} name="95th Percentile" />
+            <Line type="monotone" dataKey="p99" stroke="#ffc658" name="99th Percentile" />
+          </ComposedChart>
         </ResponsiveContainer>
       </div>
     </div>
