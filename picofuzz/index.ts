@@ -93,12 +93,12 @@ async function handleRequest(spec: config.ChainSpec, socket: Socket, stats: Stat
   console.log(`[node] <-- ${MessageType[msgIn.type]} ${msgIn.value}`);
 
   let response: Buffer = Buffer.alloc(0);
-  await stats.measure(filePath, async () => {
+  const tookNs = await stats.measure(filePath, async () => {
     response = await socket.send(fileData);
   });
 
   const msgOut = decodeMessage(spec, response);
-  console.log(`[node] --> ${MessageType[msgOut.type]} ${msgOut.value}`);
+  console.log(`[node] --> ${MessageType[msgOut.type]} ${msgOut.value}, took: ${tookNs}`);
 
   return true;
 }
