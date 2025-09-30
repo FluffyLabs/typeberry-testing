@@ -22,6 +22,7 @@ export class Stats {
     const data = this.stats.get(name) ?? [];
     data.push(tookNs);
     this.stats.set(name, data);
+    return tookNs;
   }
 
   toString(withDetails = false) {
