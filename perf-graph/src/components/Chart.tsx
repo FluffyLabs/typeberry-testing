@@ -78,12 +78,9 @@ export function Chart({ name }: { name: string }) {
 
           const parse = (v: string) => Number.parseFloat((Number.parseInt(v) / DIV).toFixed(1));
           const parseF = (v: string) => Number.parseFloat(v) / DIV;
-          const versionParts = projectName.split("@");
-          const version = versionParts.pop();
 
           return {
             projectName,
-            version,
             date,
             count: parse(count),
             sum: parse(sum),

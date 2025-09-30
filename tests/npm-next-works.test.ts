@@ -3,9 +3,9 @@ import { ExternalProcess } from "./external-process.js";
 
 const TEST_TIMEOUT = 10_000;
 
-describe("NPM published version works", { timeout: TEST_TIMEOUT }, () => {
+describe("NPM published next version works", { timeout: TEST_TIMEOUT }, () => {
   it("should display help", async () => {
-    const proc = ExternalProcess.spawn("npm/npx", "npx", "-y", "@typeberry/jam@latest", "--help").terminateAfter(
+    const proc = ExternalProcess.spawn("npm/npx", "npx", "-y", "@typeberry/jam@next", "--help").terminateAfter(
       TEST_TIMEOUT,
     );
 
