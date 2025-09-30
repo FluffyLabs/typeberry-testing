@@ -4,10 +4,12 @@ import {
   Bar,
   CartesianGrid,
   ComposedChart,
+  DefaultTooltipContent,
   Legend,
   Line,
   ResponsiveContainer,
   Tooltip,
+  type TooltipContentProps,
   XAxis,
   YAxis,
 } from "recharts";
@@ -76,9 +78,12 @@ export function Chart({ name }: { name: string }) {
 
           const parse = (v: string) => Number.parseFloat((Number.parseInt(v) / DIV).toFixed(1));
           const parseF = (v: string) => Number.parseFloat(v) / DIV;
+          const versionParts = projectName.split("@");
+          const version = versionParts.pop();
 
           return {
             projectName,
+            version,
             date,
             count: parse(count),
             sum: parse(sum),
@@ -141,6 +146,7 @@ export function Chart({ name }: { name: string }) {
             <Tooltip
               labelFormatter={(value) => new Date(value).toLocaleString()}
               formatter={(value: number, name: string) => [value.toLocaleString(), name]}
+              content={renderTooltip}
             />
             <Legend />
             <Line type="monotone" dataKey="min" stroke="#2563eb" name="Min" />
@@ -155,3 +161,15 @@ export function Chart({ name }: { name: string }) {
     </div>
   );
 }
+
+function renderTooltip(props: TooltipContentProps<number, string>) {
+  const rest = DefaultTooltipContent(props);
+  const name = props.payload[0]?.payload.projectName ?? "";
+  return (
+    <>
+      <span style={STYLES}>{name}</span>
+      {rest}
+    </>
+  );
+}
+const STYLES = { background: "white", padding: "4px" };
