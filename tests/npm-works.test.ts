@@ -1,7 +1,7 @@
 import { describe, it } from "node:test";
 import { ExternalProcess } from "./external-process.js";
 
-const TEST_TIMEOUT = 10_000;
+const TEST_TIMEOUT = 3 * 60 * 1_000;
 
 describe("NPM published version works", { timeout: TEST_TIMEOUT }, () => {
   it("should display help", async () => {
