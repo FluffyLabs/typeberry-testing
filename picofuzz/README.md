@@ -10,27 +10,49 @@ Picofuzz is designed to test Typeberry nodes by sending pre-prepared binary fuzz
 
 ```bash
 # Run directly with tsx
-npx tsx index.ts <directory> <socket> [repeat]
+npx tsx index.ts [options] <directory> <socket>
 
 # Using npm script
-npm start <directory> <socket> [repeat]
+npm start [options] <directory> <socket>
 
 # Using Docker
 docker build -t picofuzz .
-docker run picofuzz <directory> <socket> [repeat]
+docker run picofuzz [options] <directory> <socket>
 ```
+
+### Options
+
+- `-f, --flavour <spec>`: JAM spec: tiny | full (default: tiny)
+- `-r, --repeat <count>`: Number of repetitions (default: 1)
+- `-s, --stats <file>`: Append aggregated stats to a CSV file
+- `-h, --help`: Show help
 
 ### Parameters
 
 - `<directory>`: Directory containing .bin files with fuzz data
 - `<socket>`: Socket path or address for communication with the target node
-- `[repeat]`: Optional number of times to repeat the entire test suite (default: 1)
 
 ## Example
 
 ```bash
 # Run picofuzz on data directory, connect to local socket, repeat 3 times
-npx tsx index.ts ./fuzz-data /tmp/typeberry.sock 3
+npm start -r 3 ./fuzz-data /tmp/typeberry.sock
+
+# Run with full JAM spec and save stats to CSV
+npm start -f full -s results.csv ./fuzz-data /tmp/typeberry.sock
+```
+
+## Testing typeberry with standard w3f-conformance data
+
+```bash
+# Generate `picofuzz-data`:
+npm run prepare-data
+
+# Start typeberry fuzz target first.
+npx @typeberry/jam fuzz-target
+
+# Select and execute some tests
+npm start -r 3 ../picofuzz-data/safrole /tmp/jam_target.sock
 ```
 
 ## How It Works
@@ -44,8 +66,7 @@ npx tsx index.ts ./fuzz-data /tmp/typeberry.sock 3
 
 ## Dependencies
 
-- `@typeberry/lib` - Core Typeberry protocol implementation
-- `tsx` - TypeScript execution environment
+- `@typeberry/lib` - Core typeberry protocol implementation
 
 ## Building Docker Image
 
