@@ -28,6 +28,12 @@ E2E tests for [Typeberry](https://github.com/FluffyLabs/typeberry) - a JAM node 
 | **Minifuzz Forks** | [![Minifuzz Forks Test](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/minifuzz.yml/badge.svg?job=minifuzz-forks)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/minifuzz.yml) | Tests fork handling and process management |
 | **Minifuzz No Forks** | [![Minifuzz No Forks Test](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/minifuzz.yml/badge.svg?job=minifuzz-no-forks)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/minifuzz.yml) | Tests single-process operation without forking |
 
+
+## Standalone tools
+
+- [picofuzz](./picofuzz)
+- [perf-graph](./perf-graph)
+
 ## Running Tests
 
 ### Prerequisites
@@ -89,11 +95,24 @@ Picofuzz is a lightweight fuzzing tool that sends prepared fuzz messages using t
 
 ```bash
 # Run picofuzz directly
-npm exec tsx picofuzz/index.ts <directory> <socket> [repeat]
+npm exec tsx picofuzz/index.ts [options] <directory> <socket>
+
+# Options:
+#   -f, --flavour <spec>      JAM spec: tiny | full (default: tiny)
+#   -r, --repeat  <count>     Number of repetitions (default: 1)
+#   -s, --stats   <file>      Append aggregated stats to a CSV file
+#   -h, --help                Show help
+
+# Examples:
+npm exec tsx picofuzz/index.ts data/fallback /tmp/typeberry.sock
+npm exec tsx picofuzz/index.ts -f full -r 10 data/safrole /tmp/typeberry.sock
+npm exec tsx picofuzz/index.ts -s results.csv data/storage /tmp/typeberry.sock
+
+See more details about [picofuzz](./picofuzz).
 
 # Using Docker
 docker build -t picofuzz .
-docker run picofuzz <directory> <socket> [repeat]
+docker run picofuzz [options] <directory> <socket>
 ```
 
 ## Project Structure
