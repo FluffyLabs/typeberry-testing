@@ -95,7 +95,7 @@ Picofuzz is a lightweight fuzzing tool that sends prepared fuzz messages using t
 
 ```bash
 # Run picofuzz directly
-npm exec tsx picofuzz/index.ts [options] <directory> <socket>
+npm start -w @typeberry/picofuzz [options] <directory> <socket>
 
 # Options:
 #   -f, --flavour <spec>      JAM spec: tiny | full (default: tiny)
@@ -103,14 +103,18 @@ npm exec tsx picofuzz/index.ts [options] <directory> <socket>
 #   -s, --stats   <file>      Append aggregated stats to a CSV file
 #   -h, --help                Show help
 
+# Generating test data:
+npm run prepare-data -w @typeberry/picofuzz
+
 # Examples:
-npm exec tsx picofuzz/index.ts data/fallback /tmp/typeberry.sock
-npm exec tsx picofuzz/index.ts -f full -r 10 data/safrole /tmp/typeberry.sock
-npm exec tsx picofuzz/index.ts -s results.csv data/storage /tmp/typeberry.sock
+npm start -w @typeberry/picofuzz picofuzz-data/fallback /tmp/typeberry.sock
+npm start -w @typeberry/picofuzz -r 10 picofuzz-data/safrole /tmp/typeberry.sock
+npm start -w @typeberry/picofuzz -s results.csv picofuzz-data/storage /tmp/typeberry.sock
 
 See more details about [picofuzz](./picofuzz).
 
 # Using Docker
+cd picofuzz
 docker build -t picofuzz .
 docker run picofuzz [options] <directory> <socket>
 ```

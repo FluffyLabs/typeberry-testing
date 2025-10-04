@@ -36,10 +36,10 @@ docker run picofuzz [options] <directory> <socket>
 
 ```bash
 # Run picofuzz on data directory, connect to local socket, repeat 3 times
-npx tsx index.ts -r 3 ./fuzz-data /tmp/typeberry.sock
+npm start -r 3 ./fuzz-data /tmp/typeberry.sock
 
 # Run with full JAM spec and save stats to CSV
-npx tsx index.ts -f full -s results.csv ./fuzz-data /tmp/typeberry.sock
+npm start -f full -s results.csv ./fuzz-data /tmp/typeberry.sock
 ```
 
 ## Testing typeberry with standard w3f-conformance data
@@ -52,7 +52,7 @@ npm run prepare-data
 npx @typeberry/jam fuzz-target
 
 # Select and execute some tests
-npm start -r 3 ./picofuzz-data/safrole /tmp/jam_target.sock
+npm start -r 3 ../picofuzz-data/safrole /tmp/jam_target.sock
 ```
 
 ## How It Works
@@ -66,8 +66,7 @@ npm start -r 3 ./picofuzz-data/safrole /tmp/jam_target.sock
 
 ## Dependencies
 
-- `@typeberry/lib` - Core Typeberry protocol implementation
-- `tsx` - TypeScript execution environment
+- `@typeberry/lib` - Core typeberry protocol implementation
 
 ## Building Docker Image
 
