@@ -40,8 +40,15 @@ for DIR in fallback safrole storage storage_light; do
       $CONVERT \
         $SOURCE/$DIR/$FILE_NUM.bin \
         stf-vector as-fuzz-message to-bin \
-        $DEST/$DIR/$FILE_NUM.bin
+        $DEST/$DIR/$FILE_NUM.bin &
+
+      # Limit concurrent jobs to 20
+      if (( $(jobs -r | wc -l) >= 20 )); then
+        wait # and wait for all of them to finish
+      fi
   done
+
+  wait
 done
 
 # Save the version after successful completion

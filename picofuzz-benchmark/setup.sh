@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -eu
 
+# Jump to workspace root.
+cd "$(dirname "${BASH_SOURCE[0]}")"
+cd ..
+
 echo "==> Installing dependencies..."
 npm ci
 
