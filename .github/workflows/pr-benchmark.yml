@@ -20,7 +20,7 @@
 #     * Post comments to PRs in fluffylabs/typeberry (repo:public_repo or issues:write)
 #     Note: GITHUB_TOKEN is used as fallback but may not have sufficient permissions
 #
-name: PR Benchmark
+name: Benchmark Typeberry PR
 
 on:
   workflow_dispatch:
@@ -73,7 +73,7 @@ jobs:
             -H "Authorization: token $GH_TOKEN" \
             -H "Accept: application/vnd.github.v3+json" \
             "https://api.github.com/repos/fluffylabs/typeberry/actions/workflows" \
-            | jq -r '.workflows[] | select(.name == "build-docker" or .path | endswith("build-docker.yml")) | .id' \
+            | jq -r '.workflows[] | select(.name == "Build - Docker" or (.path | endswith("build-docker.yml"))) | .id' \
             | head -n 1)
 
           if [ -z "$WORKFLOW_ID" ]; then
