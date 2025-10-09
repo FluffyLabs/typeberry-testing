@@ -39,7 +39,7 @@ concurrency:
 jobs:
   setup-docker-image:
     name: Setup Docker Image
-    runs-on: self-hosted
+    runs-on: [self-hosted, perf]
     outputs:
       pr_number: ${{ steps.set-vars.outputs.pr_number }}
       workflow_run_id: ${{ steps.find-workflow-run.outputs.workflow_run_id }}

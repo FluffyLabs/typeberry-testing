@@ -8,11 +8,13 @@ const WORKSPACE_ROOT = path.resolve(
 );
 process.chdir(WORKSPACE_ROOT);
 
-const TESTS = ["fallback", "safrole", "storage", "storage_light"] as const;
+const THRESHOLD = 0.05; // 5% difference is considered no-change.
+
 const BASELINE_URL = "https://typeberry.fluffylabs.dev";
 const RESULT_DIR = `${WORKSPACE_ROOT}/picofuzz-result`;
 const REPORT_FILE = `${WORKSPACE_ROOT}/benchmark-report.md`;
 
+const TESTS = ["fallback", "safrole", "storage", "storage_light"] as const;
 const TEST_FILES = [
   import.meta.resolve("@typeberry/tests/picofuzz/fallback.test.js"),
   import.meta.resolve("@typeberry/tests/picofuzz/safrole.test.js"),
@@ -49,7 +51,7 @@ async function downloadBaseline(test: TestName): Promise<TestStats | null> {
     const content = await response.text();
     const lines = content.trim().split("\n");
 
-    if (lines.length < 2) {
+    if (lines.length < 1) {
       console.warn(`Baseline for ${test} has insufficient data`);
       return null;
     }
@@ -85,7 +87,7 @@ function parseCSV(filePath: string): TestStats | null {
   const content = fs.readFileSync(filePath, "utf8");
   const lines = content.trim().split("\n");
 
-  if (lines.length < 2) {
+  if (lines.length < 1) {
     console.warn(`CSV file has insufficient data: ${filePath}`);
     return null;
   }
@@ -111,7 +113,7 @@ function formatDiff(baseline: number, current: number): string {
   const diff = current - baseline;
   const percentDiff = ((diff / baseline) * 100).toFixed(2);
   const sign = diff > 0 ? "+" : "";
-  const emoji = Math.abs(diff) < baseline * 0.05 ? "≈" : diff > 0 ? "🔴" : "🟢";
+  const emoji = Math.abs(diff) < baseline * THRESHOLD ? "≈" : diff > 0 ? "🔴" : "🟢";
   return `${emoji} ${sign}${diff.toFixed(2)}ms (${sign}${percentDiff}%)`;
 }
 
