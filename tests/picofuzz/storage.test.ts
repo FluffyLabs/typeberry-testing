@@ -1,4 +1,4 @@
 import { runPicofuzzTest } from "./common.js";
 
 const EXAMPLES_DIR = "picofuzz-data/storage";
-runPicofuzzTest("storage", EXAMPLES_DIR, 10);
+runPicofuzzTest("storage", EXAMPLES_DIR);

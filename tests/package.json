@@ -1,5 +1,5 @@
 {
-  "name": "@typeberry/testing",
+  "name": "@typeberry/tests",
   "version": "1.0.0",
   "description": "E2E tests for typeberry.",
   "main": "index.js",

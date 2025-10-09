@@ -119,6 +119,30 @@ docker build -t picofuzz .
 docker run picofuzz [options] <directory> <socket>
 ```
 
+## PR Benchmark Workflow
+
+The [PR Benchmark workflow](./.github/workflows/pr-benchmark.yml) allows you to test and benchmark PRs from the [typeberry repository](https://github.com/FluffyLabs/typeberry) before merging. It runs the complete picofuzz test suite against a specific Docker image build and compares the results with baseline performance metrics.
+
+### Usage
+
+**Manual Trigger:**
+1. Go to [Actions > PR Benchmark](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/pr-benchmark.yml)
+2. Click "Run workflow"
+3. Enter the PR number from fluffylabs/typeberry (e.g., `704`)
+
+The workflow will automatically find the latest successful build-docker workflow run for that PR.
+
+**Automated Trigger:**
+```bash
+curl -X POST \
+  -H "Authorization: token YOUR_PAT" \
+  https://api.github.com/repos/FluffyLabs/typeberry-testing/dispatches \
+  -d '{"event_type": "benchmark-pr", "client_payload": {"pr_number": "704"}}'
+```
+
+**Requirements:**
+- `TYPEBERRY_PAT` secret with permissions to read artifacts and post comments to fluffylabs/typeberry
+
 ## Project Structure
 
 ```

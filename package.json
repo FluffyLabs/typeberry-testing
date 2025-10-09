@@ -6,9 +6,10 @@
   "type": "module",
   "workspaces": [
     "./minifuzz",
+    "./perf-graph",
     "./picofuzz",
-    "./tests",
-    "perf-graph"
+    "./picofuzz-benchmark",
+    "./tests"
   ],
   "scripts": {
     "build": "tsc && npm run build -w perf-graph",
