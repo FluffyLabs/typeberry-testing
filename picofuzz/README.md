@@ -45,14 +45,11 @@ npm start -f full -s results.csv ./fuzz-data /tmp/typeberry.sock
 ## Testing typeberry with standard w3f-conformance data
 
 ```bash
-# Generate `picofuzz-data`:
-npm run prepare-data
-
 # Start typeberry fuzz target first.
 npx @typeberry/jam fuzz-target
 
-# Select and execute some tests
-npm start -r 3 ../picofuzz-data/safrole /tmp/jam_target.sock
+# Select and execute some tests (data is available via submodules)
+npm start -r 3 ../picofuzz-data/picofuzz-data/safrole /tmp/jam_target.sock
 ```
 
 ## How It Works

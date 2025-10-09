@@ -41,7 +41,7 @@ jobs:
 
             Updated submodules:
             - jam-conformance
-            - jam-test-vectors
+            - picofuzz-data (including jam-test-vectors)
 
             Please review the changes before merging.
           branch: update-submodules

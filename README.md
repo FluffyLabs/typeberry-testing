@@ -45,6 +45,12 @@ E2E tests for [Typeberry](https://github.com/FluffyLabs/typeberry) - a JAM node 
 ### Setup
 
 ```bash
+# Clone the repository with recursive submodules
+git clone --recursive https://github.com/FluffyLabs/typeberry-testing.git
+
+# Or if already cloned, initialize submodules recursively
+git submodule update --init --recursive
+
 # Install dependencies
 npm install
 
@@ -103,13 +109,10 @@ npm start -w @fluffylabs/picofuzz [options] <directory> <socket>
 #   -s, --stats   <file>      Append aggregated stats to a CSV file
 #   -h, --help                Show help
 
-# Generating test data:
-npm run prepare-data -w @fluffylabs/picofuzz
-
 # Examples:
-npm start -w @fluffylabs/picofuzz picofuzz-data/fallback /tmp/jam_target.sock
-npm start -w @fluffylabs/picofuzz -r 10 picofuzz-data/safrole /tmp/jam_target.sock
-npm start -w @fluffylabs/picofuzz -s results.csv picofuzz-data/storage /tmp/jam_target.sock
+npm start -w @fluffylabs/picofuzz picofuzz-data/picofuzz-data/fallback /tmp/jam_target.sock
+npm start -w @fluffylabs/picofuzz -r 10 picofuzz-data/picofuzz-data/safrole /tmp/jam_target.sock
+npm start -w @fluffylabs/picofuzz -s results.csv picofuzz-data/picofuzz-data/storage /tmp/jam_target.sock
 
 See more details about [picofuzz](./picofuzz).
 
