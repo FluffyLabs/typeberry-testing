@@ -1,10 +1,10 @@
-# PR Benchmark Scripts
+# Picofuzz benchmark
 
-This directory contains scripts for running benchmark tests on Typeberry PRs.
+This directory contains scripts for running picofuzz benchmarks on latest typeberry docker image.
 
 ## Scripts
 
-### `benchmark-setup.sh`
+### `setup.sh`
 
 Prepares the environment for benchmark tests:
 - Installs npm dependencies
@@ -14,10 +14,10 @@ Prepares the environment for benchmark tests:
 
 **Usage:**
 ```bash
-./benchmark-setup.sh
+./setup.sh
 ```
 
-### `benchmark-run.ts`
+### `index.ts`
 
 Runs all benchmark tests and generates a comparison report:
 - Runs picofuzz tests: fallback, safrole, storage, storage_light
@@ -27,7 +27,7 @@ Runs all benchmark tests and generates a comparison report:
 
 **Usage:**
 ```bash
-npx tsx benchmark-run.ts
+npm start
 ```
 
 **Output:**
@@ -47,22 +47,14 @@ docker load -i typeberry-image.tar
 docker tag <image-id> ghcr.io/fluffylabs/typeberry:latest
 
 # 2. Run setup
-bash .github/scripts/benchmark-setup.sh
+npm run setup
 
 # 3. Run benchmarks
-npx tsx .github/scripts/benchmark-run.ts
+npm start
 
 # 4. View the report
 cat benchmark-report.md
 ```
-
-## Environment Variables
-
-The scripts respect the following environment variables:
-
-- `GITHUB_SERVER_URL` - GitHub server URL (for report links)
-- `GITHUB_REPOSITORY` - Repository name (for report links)
-- `GITHUB_RUN_ID` - Workflow run ID (for report links)
 
 ## Exit Codes
 

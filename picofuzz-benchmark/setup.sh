@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# This script prepares the environment for running benchmark tests
-# Usage: ./benchmark-setup.sh
-
 echo "==> Installing dependencies..."
 npm ci
 

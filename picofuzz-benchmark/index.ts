@@ -1,17 +1,25 @@
-#!/usr/bin/env tsx
-/**
- * This script runs picofuzz benchmark tests and generates a comparison report
- * Usage: tsx benchmark-run.ts
- */
-
-import { execSync } from "node:child_process";
+import { run } from "node:test";
+import { spec } from "node:test/reporters";
 import fs from "node:fs";
 import path from "node:path";
 
+const WORKSPACE_ROOT = path.resolve(path.join(
+	new URL(import.meta.resolve('@typeberry/tests/package.json')).pathname,
+	'../../'
+));
+process.chdir(WORKSPACE_ROOT);
+
 const TESTS = ["fallback", "safrole", "storage", "storage_light"] as const;
 const BASELINE_URL = "https://typeberry.fluffylabs.dev";
-const RESULT_DIR = "./picofuzz-result";
-const REPORT_FILE = "./benchmark-report.md";
+const RESULT_DIR = `${WORKSPACE_ROOT}/picofuzz-result`;
+const REPORT_FILE = `${WORKSPACE_ROOT}/benchmark-report.md`;
+
+const TEST_FILES = [
+	import.meta.resolve('@typeberry/tests/picofuzz/fallback.test.js'),
+	import.meta.resolve('@typeberry/tests/picofuzz/safrole.test.js'),
+	import.meta.resolve('@typeberry/tests/picofuzz/storage.test.js'),
+	import.meta.resolve('@typeberry/tests/picofuzz/storage_light.test.js'),
+];
 
 type TestName = (typeof TESTS)[number];
 
@@ -116,11 +124,44 @@ function formatDiff(baseline: number, current: number): string {
 async function runTest(test: TestName): Promise<boolean> {
 	console.log(`\n==> Running ${test} test...`);
 
+	let hasFailures = false;
+
 	try {
-		execSync(`npm exec tsx --test tests/picofuzz/${test}.test.ts`, {
-			stdio: "inherit",
-			env: process.env,
+		const idx = TESTS.indexOf(test);
+		const testFile = TEST_FILES[idx];
+
+		// Create test runner stream
+		const stream = run({
+			files: [new URL(testFile).pathname],
 		});
+
+		// Track test failures
+		stream.on("test:fail", () => {
+			hasFailures = true;
+		});
+
+		stream.on("test:pass", () => {
+			// Test passed - no action needed
+		});
+
+		// Use spec reporter for formatted output
+		const reporter = spec();
+		stream.compose(reporter).pipe(process.stdout);
+
+		// Wait for all tests to complete
+		await new Promise<void>((resolve, reject) => {
+			stream.on("end", () => resolve());
+			stream.on("error", (error) => {
+				hasFailures = true;
+				reject(error);
+			});
+		});
+
+		if (hasFailures) {
+			console.error(`❌ ${test} test failed`);
+			return false;
+		}
+
 		console.log(`✅ ${test} test completed`);
 		return true;
 	} catch (error) {
@@ -167,12 +208,8 @@ async function generateReport(
 		report += "\n";
 	}
 
-	const runUrl = process.env.GITHUB_SERVER_URL
-		? `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`
-		: "N/A";
-
 	report += "\n---\n";
-	report += `🤖 Automated benchmark from [workflow run](${runUrl})`;
+	report += "🤖 Automated benchmark";
 
 	return report;
 }
