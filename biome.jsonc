@@ -61,7 +61,7 @@
     "includes": [
       "**",
       "!jam-conformance/**",
-      "!jam-test-vectors/**",
+      "!picofuzz-data/**",
       "!**/dist/**/*",
       "!**/benchmarks/**/output/**/*",
       "!**/test-vectors/**/*",

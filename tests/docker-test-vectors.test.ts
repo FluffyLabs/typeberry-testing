@@ -10,7 +10,7 @@ describe("Docker can execute tests", { timeout: TEST_TIMEOUT }, () => {
       "docker",
       "run",
       "--mount",
-      "type=bind,src=./jam-test-vectors,dst=/tests,readonly",
+      "type=bind,src=./picofuzz-data/jam-test-vectors,dst=/tests,readonly",
       "--rm",
       "--entrypoint",
       "/bin/bash",

@@ -9,7 +9,6 @@ This directory contains scripts for running picofuzz benchmarks on latest typebe
 Prepares the environment for benchmark tests:
 - Installs npm dependencies
 - Builds the picofuzz Docker image
-- Prepares test data
 - Creates result directories
 
 **Usage:**
