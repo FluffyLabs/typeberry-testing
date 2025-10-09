@@ -56,7 +56,7 @@ jobs:
       - name: Find latest build-docker workflow run
         id: find-workflow-run
         env:
-          GH_TOKEN: ${{ secrets.TYPEBERRY_PAT || secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.TYPEBERRY_PAT }}
           PR_NUMBER: ${{ steps.set-vars.outputs.pr_number }}
         run: |
           # Get PR details to find the head branch
@@ -161,22 +161,63 @@ jobs:
     runs-on: ubuntu-latest
     if: always()
     steps:
+      - name: Generate GitHub App token
+        id: generate-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+          owner: fluffylabs
+          repositories: typeberry
+
       - name: Download benchmark report
         uses: actions/download-artifact@v4
         with:
           name: benchmark-report
 
-      - name: Post comment to PR
+      - name: Post or update comment on PR
         uses: actions/github-script@v7
         with:
-          github-token: ${{ secrets.TYPEBERRY_PAT || secrets.GITHUB_TOKEN }}
+          github-token: ${{ steps.generate-token.outputs.token }}
           script: |
             const fs = require('fs');
             const report = fs.readFileSync('benchmark-report.md', 'utf8');
 
-            await github.rest.issues.createComment({
-              owner: 'fluffylabs',
-              repo: 'typeberry',
-              issue_number: ${{ needs.setup-docker-image.outputs.pr_number }},
-              body: report
+            // Add a marker to identify our comments
+            const marker = '<!-- typeberry-benchmark-report -->';
+            const body = marker + '\n' + report;
+
+            const owner = 'fluffylabs';
+            const repo = 'typeberry';
+            const issue_number = ${{ needs.setup-docker-image.outputs.pr_number }};
+
+            // Find existing comment
+            const { data: comments } = await github.rest.issues.listComments({
+              owner,
+              repo,
+              issue_number,
             });
+
+            const existingComment = comments.find(comment =>
+              comment.body && comment.body.includes(marker)
+            );
+
+            if (existingComment) {
+              // Update existing comment
+              await github.rest.issues.updateComment({
+                owner,
+                repo,
+                comment_id: existingComment.id,
+                body
+              });
+              console.log(`Updated existing comment: ${existingComment.html_url}`);
+            } else {
+              // Create new comment
+              const { data: newComment } = await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number,
+                body
+              });
+              console.log(`Created new comment: ${newComment.html_url}`);
+            }
