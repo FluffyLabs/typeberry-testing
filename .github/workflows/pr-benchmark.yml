@@ -104,15 +104,15 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: typeberry-docker-image
-          path: /tmp/docker-image
+          path: ./docker-image
           github-token: ${{ secrets.TYPEBERRY_PAT || secrets.GITHUB_TOKEN }}
           repository: fluffylabs/typeberry
           run-id: ${{ steps.find-workflow-run.outputs.workflow_run_id }}
 
       - name: Load docker image
         run: |
-          gunzip /tmp/docker-image/typeberry-image.tar.gz
-          docker load -i /tmp/docker-image/typeberry-image.tar
+          gunzip ./docker-image/typeberry-image.tar.gz
+          docker load -i ./docker-image/typeberry-image.tar
           # Tag the image as latest so existing tests work
           IMAGE_ID=$(docker images --format "{{.ID}}" --filter "reference=ghcr.io/fluffylabs/typeberry:*" | head -n 1)
           if [ -z "$IMAGE_ID" ]; then
