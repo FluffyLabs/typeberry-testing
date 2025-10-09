@@ -3,8 +3,9 @@ import { createSharedVolume, picofuzz, typeberry } from "../common.js";
 import type { ExternalProcess } from "../external-process.js";
 
 const timeout = 10 * 60 * 1000;
+const repeat = 10;
 
-export function runPicofuzzTest(name: string, directory: string, repeat: number) {
+export function runPicofuzzTest(name: string, directory: string) {
   describe(`[picofuzz] ${name}`, { timeout }, () => {
     let typeberryProc: ExternalProcess | null = null;
     let picofuzzProc: ExternalProcess | null = null;
