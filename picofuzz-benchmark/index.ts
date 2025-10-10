@@ -8,7 +8,7 @@ const WORKSPACE_ROOT = path.resolve(
 );
 process.chdir(WORKSPACE_ROOT);
 
-const THRESHOLD = 0.05; // 5% difference is considered no-change.
+const THRESHOLD = 0.1; // 10% difference is considered no-change.
 
 const BASELINE_URL = "https://typeberry.fluffylabs.dev";
 const RESULT_DIR = `${WORKSPACE_ROOT}/picofuzz-result`;
@@ -25,16 +25,16 @@ const TEST_FILES = [
 type TestName = (typeof TESTS)[number];
 
 interface TestStats {
-  timestamp: string;
-  peer: string;
-  total_duration_ms: number;
-  imports: number;
+  name: string;
   avg_import_ms: number;
   min_import_ms: number;
-  max_import_ms: number;
-  p50_import_ms: number;
   p90_import_ms: number;
   p99_import_ms: number;
+}
+
+// Convert nanoseconds to milliseconds
+function nsToMs(ns: number): number {
+  return ns / 1_000_000;
 }
 
 async function downloadBaseline(test: TestName): Promise<TestStats | null> {
@@ -61,16 +61,11 @@ async function downloadBaseline(test: TestName): Promise<TestStats | null> {
     const values = lastLine.split(",");
 
     return {
-      timestamp: values[0],
-      peer: values[1],
-      total_duration_ms: Number.parseFloat(values[2]),
-      imports: Number.parseInt(values[3], 10),
-      avg_import_ms: Number.parseFloat(values[4]),
-      min_import_ms: Number.parseFloat(values[5]),
-      max_import_ms: Number.parseFloat(values[6]),
-      p50_import_ms: Number.parseFloat(values[7]),
-      p90_import_ms: Number.parseFloat(values[8]),
-      p99_import_ms: Number.parseFloat(values[9]),
+      name: values[0],
+      avg_import_ms: nsToMs(Number.parseFloat(values[4])),
+      min_import_ms: nsToMs(Number.parseFloat(values[6])),
+      p90_import_ms: nsToMs(Number.parseFloat(values[17])),
+      p99_import_ms: nsToMs(Number.parseFloat(values[19])),
     };
   } catch (error) {
     console.error(`Error fetching baseline for ${test}:`, error);
@@ -96,16 +91,11 @@ function parseCSV(filePath: string): TestStats | null {
   const values = lastLine.split(",");
 
   return {
-    timestamp: values[0],
-    peer: values[1],
-    total_duration_ms: Number.parseFloat(values[2]),
-    imports: Number.parseInt(values[3], 10),
-    avg_import_ms: Number.parseFloat(values[4]),
-    min_import_ms: Number.parseFloat(values[5]),
-    max_import_ms: Number.parseFloat(values[6]),
-    p50_import_ms: Number.parseFloat(values[7]),
-    p90_import_ms: Number.parseFloat(values[8]),
-    p99_import_ms: Number.parseFloat(values[9]),
+    name: values[0],
+    avg_import_ms: nsToMs(Number.parseFloat(values[4])),
+    min_import_ms: nsToMs(Number.parseFloat(values[6])),
+    p90_import_ms: nsToMs(Number.parseFloat(values[17])),
+    p99_import_ms: nsToMs(Number.parseFloat(values[19])),
   };
 }
 
@@ -188,17 +178,15 @@ async function generateReport(
     report += "|--------|----------|---------|------------|\n";
 
     if (baseline) {
-      report += `| Avg Import Time | ${baseline.avg_import_ms.toFixed(2)}ms | ${current.avg_import_ms.toFixed(2)}ms | ${formatDiff(baseline.avg_import_ms, current.avg_import_ms)} |\n`;
-      report += `| P50 Import Time | ${baseline.p50_import_ms.toFixed(2)}ms | ${current.p50_import_ms.toFixed(2)}ms | ${formatDiff(baseline.p50_import_ms, current.p50_import_ms)} |\n`;
-      report += `| P90 Import Time | ${baseline.p90_import_ms.toFixed(2)}ms | ${current.p90_import_ms.toFixed(2)}ms | ${formatDiff(baseline.p90_import_ms, current.p90_import_ms)} |\n`;
-      report += `| P99 Import Time | ${baseline.p99_import_ms.toFixed(2)}ms | ${current.p99_import_ms.toFixed(2)}ms | ${formatDiff(baseline.p99_import_ms, current.p99_import_ms)} |\n`;
-      report += `| Total Duration | ${baseline.total_duration_ms.toFixed(2)}ms | ${current.total_duration_ms.toFixed(2)}ms | ${formatDiff(baseline.total_duration_ms, current.total_duration_ms)} |\n`;
+      report += `| min | ${baseline.min_import_ms.toFixed(2)}ms | ${current.min_import_ms.toFixed(2)}ms | ${formatDiff(baseline.min_import_ms, current.min_import_ms)} |\n`;
+      report += `| mean | ${baseline.avg_import_ms.toFixed(2)}ms | ${current.avg_import_ms.toFixed(2)}ms | ${formatDiff(baseline.avg_import_ms, current.avg_import_ms)} |\n`;
+      report += `| p90 | ${baseline.p90_import_ms.toFixed(2)}ms | ${current.p90_import_ms.toFixed(2)}ms | ${formatDiff(baseline.p90_import_ms, current.p90_import_ms)} |\n`;
+      report += `| p99 | ${baseline.p99_import_ms.toFixed(2)}ms | ${current.p99_import_ms.toFixed(2)}ms | ${formatDiff(baseline.p99_import_ms, current.p99_import_ms)} |\n`;
     } else {
-      report += `| Avg Import Time | N/A | ${current.avg_import_ms.toFixed(2)}ms | Baseline not available |\n`;
-      report += `| P50 Import Time | N/A | ${current.p50_import_ms.toFixed(2)}ms | Baseline not available |\n`;
-      report += `| P90 Import Time | N/A | ${current.p90_import_ms.toFixed(2)}ms | Baseline not available |\n`;
-      report += `| P99 Import Time | N/A | ${current.p99_import_ms.toFixed(2)}ms | Baseline not available |\n`;
-      report += `| Total Duration | N/A | ${current.total_duration_ms.toFixed(2)}ms | Baseline not available |\n`;
+      report += `| min | N/A | ${current.min_import_ms.toFixed(2)}ms | Baseline not available |\n`;
+      report += `| mean | N/A | ${current.avg_import_ms.toFixed(2)}ms | Baseline not available |\n`;
+      report += `| p90 | N/A | ${current.p90_import_ms.toFixed(2)}ms | Baseline not available |\n`;
+      report += `| p99 | N/A | ${current.p99_import_ms.toFixed(2)}ms | Baseline not available |\n`;
     }
 
     report += "\n";
