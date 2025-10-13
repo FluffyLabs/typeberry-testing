@@ -34,6 +34,7 @@ describe("Burn mode", { timeout }, () => {
     typeberryProc = await typeberry({
       timeout,
       sharedVolume: sharedVolume.name,
+      dockerArgs: ["-e", "GP_VERSION=0.7.0"],
     });
 
     const NO_OF_ROUNDS = 50;
