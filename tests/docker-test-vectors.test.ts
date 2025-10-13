@@ -16,7 +16,7 @@ describe("Docker can execute tests", { timeout: TEST_TIMEOUT }, () => {
       "/bin/bash",
       "ghcr.io/fluffylabs/typeberry:latest",
       "-c",
-      "npm run w3f-davxy:0.7.0 -w @typeberry/test-runner ../tests/traces/**/*.json",
+      "npm run w3f-davxy:0.7.1 -w @typeberry/test-runner ../tests/traces/**/*.json",
     ).terminateAfter(TEST_TIMEOUT);
 
     await proc.cleanExit;
