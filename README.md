@@ -9,6 +9,7 @@ E2E tests for [Typeberry](https://github.com/FluffyLabs/typeberry) - a JAM node 
 [![NPM Works](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/npm-works.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/npm-works.yml)
 [![NPM @next Works](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/npm-next-works.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/npm-next-works.yml)
 [![Docker Works](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/docker-works.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/docker-works.yml)
+[![Docker Imports](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/docker-imports.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/docker-imports.yml)
 [![Docker Conformance](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/docker-conformance.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/docker-conformance.yml)
 [![Docker Test Vectors](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/docker-test-vectors.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/docker-test-vectors.yml)
 
