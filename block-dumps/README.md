@@ -31,6 +31,6 @@ for json_file in ./test-vectors/w3f-davxy_071/traces/$DIR/*.json; do
       "./$DIR/${filename}.bin" || true
 
     echo "Processed: $json_file -> ./$DIR/${filename}.bin"
-dir
+done
 
 ```
