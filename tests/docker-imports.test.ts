@@ -4,8 +4,7 @@ import { ExternalProcess } from "./external-process.js";
 const TEST_TIMEOUT = 5 * 60 * 1_000;
 
 describe("Docker image can import block dumps", { timeout: TEST_TIMEOUT }, () => {
-
-  ['fallback', 'safrole', 'storage', 'storage_light'].forEach((dir) => {
+  ["fallback", "safrole", "storage", "storage_light"].forEach((dir) => {
     it(`should import ${dir} blocks`, async () => {
       const proc = ExternalProcess.spawn(
         "docker",
@@ -16,7 +15,7 @@ describe("Docker image can import block dumps", { timeout: TEST_TIMEOUT }, () =>
         "--rm",
         "ghcr.io/fluffylabs/typeberry:latest",
         "import",
-        `/block-dumps/${dir}.bin`
+        `/block-dumps/${dir}.bin`,
       ).terminateAfter(TEST_TIMEOUT);
 
       await proc.waitForMessage(/Best block: #100/);
