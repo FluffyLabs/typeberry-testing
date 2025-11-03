@@ -30,7 +30,6 @@ E2E tests for [Typeberry](https://github.com/FluffyLabs/typeberry) - a JAM node 
 | **Minifuzz Forks** | [![Minifuzz Forks Test](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/minifuzz.yml/badge.svg?job=minifuzz-forks)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/minifuzz.yml) | Tests fork handling and process management |
 | **Minifuzz No Forks** | [![Minifuzz No Forks Test](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/minifuzz.yml/badge.svg?job=minifuzz-no-forks)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/minifuzz.yml) | Tests single-process operation without forking |
 
-
 ## Standalone tools
 
 - [picofuzz](./picofuzz)
@@ -59,6 +58,13 @@ npm install
 # Fetch the latest Typeberry Docker image
 npm run fetch-typeberry
 ```
+
+#### Submodules
+
+This repository uses the following submodules:
+
+- **[jam-conformance](https://github.com/davxy/jam-conformance/commit/14cba55d7f20f4bf6e75b19f5089f8b609d13695)** - JAM conformance traces
+- **[picofuzz-data](https://github.com/FluffyLabs/picofuzz-data/commit/b0569578d60ce3ef144f135b575a61bbc115307b)** - Data for picofuzz execution.
 
 ### Running All Tests
 

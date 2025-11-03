@@ -21,6 +21,10 @@ jobs:
           git config --global user.name 'github-actions[bot]'
           git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
 
+          # Capture old commits
+          OLD_JAM_COMMIT=$(git -C jam-conformance rev-parse HEAD)
+          OLD_PICO_COMMIT=$(git -C picofuzz-data rev-parse HEAD)
+
           # Update submodules to latest commits on their default branches
           git submodule update --remote --recursive
 
@@ -29,6 +33,16 @@ jobs:
             echo "No submodule updates available"
             exit 0
           fi
+
+          # Capture new commits
+          NEW_JAM_COMMIT=$(git -C jam-conformance rev-parse HEAD)
+          NEW_PICO_COMMIT=$(git -C picofuzz-data rev-parse HEAD)
+
+          # Update README with new commit hashes
+          sed -i "s|$OLD_JAM_COMMIT|$NEW_JAM_COMMIT|g" README.md
+          sed -i "s|$OLD_PICO_COMMIT|$NEW_PICO_COMMIT|g" README.md
+
+          git add README.md
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
