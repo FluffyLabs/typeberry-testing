@@ -150,13 +150,7 @@ export function Chart({ name }: { name: string }) {
         <ResponsiveContainer width="100%" height={400}>
           <ComposedChart data={data}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis
-              dataKey="timestamp"
-              tickFormatter={formatXAxisLabel}
-              type="number"
-              scale="time"
-              domain={["dataMin", "dataMax"]}
-            />
+            <XAxis dataKey="timestamp" tickFormatter={formatXAxisLabel} scale="auto" domain={["dataMin", "dataMax"]} />
             <YAxis />
             <Tooltip
               labelFormatter={(value) => new Date(value).toLocaleString()}
