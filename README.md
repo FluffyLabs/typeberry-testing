@@ -2,7 +2,7 @@
 
 E2E tests for [Typeberry](https://github.com/FluffyLabs/typeberry) - a JAM node implementation by Fluffy Labs.
 
-Check out our performance statistics over time at [typeberry.fluffylabs.dev](http://typeberry.fluffylabs.dev/).
+Check out our performance statistics over time at [typeberry.fluffylabs.dev](https://typeberry.fluffylabs.dev/).
 
 ## Status
 
