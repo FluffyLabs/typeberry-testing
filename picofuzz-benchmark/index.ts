@@ -174,7 +174,7 @@ async function generateReport(
       continue;
     }
 
-    report += "| Metric | Baseline | Current | Difference |\n";
+    report += `| Metric | ${baseline?.name ?? "Baseline"} | Current | Difference |\n`;
     report += "|--------|----------|---------|------------|\n";
 
     if (baseline) {

@@ -105,7 +105,25 @@ export function Chart({ name }: { name: string }) {
         });
 
         parsedData.sort((a, b) => a.timestamp - b.timestamp);
-        setData(parsedData);
+
+        // Group by version (projectName) and keep only last 5 results per version
+        const groupedByVersion = parsedData.reduce(
+          (acc, item) => {
+            if (!acc[item.projectName]) {
+              acc[item.projectName] = [];
+            }
+            acc[item.projectName].push(item);
+            return acc;
+          },
+          {} as Record<string, PerformanceData[]>,
+        );
+
+        // Take last 5 from each group
+        const limitedData = Object.values(groupedByVersion)
+          .flatMap((group) => group.slice(-5))
+          .sort((a, b) => a.timestamp - b.timestamp);
+
+        setData(limitedData);
       } catch (error) {
         console.error("Error loading CSV data:", error);
       } finally {
