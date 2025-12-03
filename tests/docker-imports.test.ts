@@ -14,6 +14,8 @@ describe("Docker image can import block dumps", { timeout: TEST_TIMEOUT }, () =>
         "type=bind,src=./block-dumps,dst=/block-dumps,readonly",
         "--rm",
         "ghcr.io/fluffylabs/typeberry:latest",
+        "--config=default",
+        "--config=\".chain_spec = /block-dumps/chain-spec.json\"",
         "import",
         `/block-dumps/${dir}.bin`,
       ).terminateAfter(TEST_TIMEOUT);
