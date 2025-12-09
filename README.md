@@ -65,7 +65,7 @@ npm run fetch-typeberry
 
 This repository uses the following submodules:
 
-- **[jam-conformance](https://github.com/davxy/jam-conformance/commit/543ca483464c2c8f33d7906a95204c8435404ad3)** - JAM conformance traces
+- **[jam-conformance](https://github.com/davxy/jam-conformance/commit/b31032a9197fc9f667acb1f36d09ac788ec98ed2)** - JAM conformance traces
 - **[picofuzz-data](https://github.com/FluffyLabs/picofuzz-data/commit/b3bdbb7a73e761d6ec07a12386b7faefdb95b28b)** - Data for picofuzz execution.
 
 ### Running All Tests
