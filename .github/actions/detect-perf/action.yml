@@ -1,0 +1,21 @@
+name: 'Detect Perf Runner'
+description: 'Detects if the workflow is running on performance hardware'
+outputs:
+  is_perf:
+    description: 'Whether running on perf hardware (true/false)'
+    value: ${{ steps.detect.outputs.is_perf }}
+runs:
+  using: 'composite'
+  steps:
+    - name: Detect if running on perf hardware
+      id: detect
+      shell: bash
+      run: |
+        # Check if runner name contains xnote (perf runner)
+        if [[ "${{ runner.name }}" == *"xnote"* ]]; then
+          echo "is_perf=true" >> $GITHUB_OUTPUT
+          echo "Running on perf hardware: ${{ runner.name }}"
+        else
+          echo "is_perf=false" >> $GITHUB_OUTPUT
+          echo "Running on non-perf hardware: ${{ runner.name }}"
+        fi

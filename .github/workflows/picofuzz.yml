@@ -30,21 +30,13 @@ jobs:
     outputs:
       is_perf_runner: ${{ steps.detect-perf.outputs.is_perf }}
     steps:
-      - name: Detect if running on perf hardware
-        id: detect-perf
-        run: |
-          # Check if runner name contains xnote (perf runner)
-          if [[ "${{ runner.name }}" == *"xnote"* ]]; then
-            echo "is_perf=true" >> $GITHUB_OUTPUT
-            echo "Running on perf hardware: ${{ runner.name }}"
-          else
-            echo "is_perf=false" >> $GITHUB_OUTPUT
-            echo "Running on non-perf hardware: ${{ runner.name }}"
-          fi
-
       - uses: actions/checkout@v4
         with:
           submodules: 'recursive'
+
+      - name: Detect if running on perf hardware
+        id: detect-perf
+        uses: ./.github/actions/detect-perf
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -67,21 +59,13 @@ jobs:
         test: [fallback, safrole, storage, storage_light]
 
     steps:
-      - name: Detect if running on perf hardware
-        id: detect-perf
-        run: |
-          # Check if runner name contains xnote (perf runner)
-          if [[ "${{ runner.name }}" == *"xnote"* ]]; then
-            echo "is_perf=true" >> $GITHUB_OUTPUT
-            echo "Running on perf hardware: ${{ runner.name }}"
-          else
-            echo "is_perf=false" >> $GITHUB_OUTPUT
-            echo "Running on non-perf hardware: ${{ runner.name }}"
-          fi
-
       - uses: actions/checkout@v4
         with:
           submodules: 'recursive'
+
+      - name: Detect if running on perf hardware
+        id: detect-perf
+        uses: ./.github/actions/detect-perf
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
