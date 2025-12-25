@@ -39,11 +39,18 @@ concurrency:
 jobs:
   setup-docker-image:
     name: Setup Docker Image
-    runs-on: [self-hosted, perf]
+    runs-on: self-hosted
     outputs:
       pr_number: ${{ steps.set-vars.outputs.pr_number }}
       workflow_run_id: ${{ steps.find-workflow-run.outputs.workflow_run_id }}
+      is_perf_runner: ${{ steps.detect-perf.outputs.is_perf }}
     steps:
+      - uses: actions/checkout@v4
+
+      - name: Detect if running on perf hardware
+        id: detect-perf
+        uses: ./.github/actions/detect-perf
+
       - name: Set variables
         id: set-vars
         run: |
@@ -125,11 +132,15 @@ jobs:
   benchmark:
     name: Run Benchmark Tests
     needs: setup-docker-image
-    runs-on: [self-hosted, perf]
+    runs-on: self-hosted
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: 'recursive'
+
+      - name: Detect if running on perf hardware
+        id: detect-perf
+        uses: ./.github/actions/detect-perf
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -153,7 +164,8 @@ jobs:
           name: picofuzz-results
           path: ./picofuzz-result/*.csv
           retention-days: 90
-        if: always()
+        # Only upload results from perf hardware for aggregation
+        if: always() && steps.detect-perf.outputs.is_perf == 'true'
 
   report:
     name: Post Results to PR
