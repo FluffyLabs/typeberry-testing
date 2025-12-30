@@ -1,7 +1,7 @@
 import { describe, it } from "node:test";
 import { ExternalProcess } from "./external-process.js";
 
-const TEST_TIMEOUT = 10 * 60 * 1_000;
+const TEST_TIMEOUT = 30 * 60 * 1_000;
 
 describe("Docker can execute JAM conformance tests", { timeout: TEST_TIMEOUT }, () => {
   it("should run latest JAM conformance tests", async () => {
@@ -16,7 +16,7 @@ describe("Docker can execute JAM conformance tests", { timeout: TEST_TIMEOUT }, 
       "/bin/bash",
       "ghcr.io/fluffylabs/typeberry:latest",
       "-c",
-      "npm run jam-conformance:0.7.0 -w @typeberry/test-runner ../tests/fuzz-reports/0.7.0/traces/**/*.json",
+      "npm run jam-conformance:0.7.2 -w @typeberry/test-runner ../tests/fuzz-reports/0.7.2/traces/**/*.json",
     ).terminateAfter(TEST_TIMEOUT);
 
     await proc.cleanExit;
