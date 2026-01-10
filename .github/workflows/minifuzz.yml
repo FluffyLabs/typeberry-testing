@@ -26,7 +26,7 @@ concurrency:
 jobs:
   init:
     name: Initializing environment
-    runs-on: self-hosted
+    runs-on: [self-hosted, non-perf]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -46,7 +46,7 @@ jobs:
   minifuzz:
     needs: init
     name: Minifuzz Tests
-    runs-on: self-hosted
+    runs-on: [self-hosted, non-perf]
     strategy:
       fail-fast: false
       matrix:
