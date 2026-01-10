@@ -29,11 +29,11 @@ export function runMinifuzzTest(name: string, directory: string, steps: number) 
       sharedVolume.stop();
     });
 
-    it(`should run ${name} tests (gp-0.7.0)`, async () => {
+    it(`should run ${name} tests (gp-0.7.2)`, async () => {
       typeberryProc = await typeberry({
         timeout,
         sharedVolume: sharedVolume.name,
-        dockerArgs: ["-e", "GP_VERSION=0.7.0"],
+        dockerArgs: ["-e", "GP_VERSION=0.7.2"],
       });
       minifuzzProc = await minifuzz({
         timeout,

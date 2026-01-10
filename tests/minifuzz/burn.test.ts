@@ -5,7 +5,7 @@ import type { ExternalProcess } from "../external-process.js";
 const TIMEOUT_MINUTES = 15;
 const timeout = TIMEOUT_MINUTES * 60 * 1_000;
 
-const EXAMPLES_DIR = "jam-conformance/fuzz-proto/examples/v1/forks";
+const EXAMPLES_DIR = "jam-conformance/fuzz-proto/examples/0.7.2/forks";
 describe("Burn mode", { timeout }, () => {
   let typeberryProc: ExternalProcess | null = null;
   let minifuzzProc: ExternalProcess | null = null;
@@ -34,7 +34,7 @@ describe("Burn mode", { timeout }, () => {
     typeberryProc = await typeberry({
       timeout,
       sharedVolume: sharedVolume.name,
-      dockerArgs: ["-e", "GP_VERSION=0.7.0"],
+      dockerArgs: ["-e", "GP_VERSION=0.7.2"],
     });
 
     const NO_OF_ROUNDS = 50;

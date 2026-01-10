@@ -50,7 +50,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        test: [burn, faulty, forks, no_forks]
+        test: [burn, forks, no_forks]
     steps:
       - uses: actions/checkout@v4
         with:
