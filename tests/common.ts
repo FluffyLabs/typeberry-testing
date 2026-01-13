@@ -10,7 +10,7 @@ const DOCKER_OPTIONS = [
   "--cpu-quota",
   "-1",
   "--memory",
-  "512m",
+  "8192m",
   "--memory-swap",
   "0m",
   "--shm-size",
