@@ -4,7 +4,12 @@ import type { ExternalProcess } from "../external-process.js";
 
 const timeout = 5 * 60 * 1_000;
 
-export function runMinifuzzTest(name: string, directory: string, steps: number) {
+export function runMinifuzzTest(
+  name: string,
+  directory: string,
+  steps: number,
+  options: { highMemory?: boolean } = {},
+) {
   describe(`[minifuzz] ${name}`, { timeout }, () => {
     let typeberryProc: ExternalProcess | null = null;
     let minifuzzProc: ExternalProcess | null = null;
@@ -34,6 +39,7 @@ export function runMinifuzzTest(name: string, directory: string, steps: number) 
         timeout,
         sharedVolume: sharedVolume.name,
         dockerArgs: ["-e", "GP_VERSION=0.7.2"],
+        options,
       });
       minifuzzProc = await minifuzz({
         timeout,

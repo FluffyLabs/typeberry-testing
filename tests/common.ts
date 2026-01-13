@@ -4,13 +4,13 @@ import { ExternalProcess } from "./external-process.js";
 const SOCKET_PATH = "/shared/jam_target.sock";
 const SHARED_VOLUME = "jam-ipc-volume";
 
-const DOCKER_OPTIONS = [
+const DOCKER_OPTIONS = (mem = "512m") => [
   "--cpu-shares",
   "2048",
   "--cpu-quota",
   "-1",
   "--memory",
-  "8192m",
+  mem,
   "--memory-swap",
   "0m",
   "--shm-size",
@@ -67,10 +67,12 @@ export async function typeberry({
   timeout,
   dockerArgs = [],
   sharedVolume = SHARED_VOLUME,
+  options = {},
 }: {
   timeout: number;
   dockerArgs?: string[];
   sharedVolume?: string;
+  options?: { highMemory?: boolean };
 }) {
   const typeberry = ExternalProcess.spawn(
     "typeberry",
@@ -78,7 +80,7 @@ export async function typeberry({
     "run",
     "--rm",
     ...dockerArgs,
-    ...DOCKER_OPTIONS,
+    ...DOCKER_OPTIONS(options.highMemory ? "2048m" : "512m"),
     "-v",
     `${sharedVolume}:/shared`,
     "ghcr.io/fluffylabs/typeberry:latest",
