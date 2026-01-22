@@ -181,4 +181,4 @@ function renderTooltip(props: TooltipContentProps<number, string>) {
     </>
   );
 }
-const STYLES = { background: "white", padding: "4px" };
+const STYLES = { background: "white", color: "black", padding: "4px" };
