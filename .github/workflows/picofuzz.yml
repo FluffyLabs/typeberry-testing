@@ -27,16 +27,11 @@ jobs:
   init:
     name: Initializing environment
     runs-on: [self-hosted, perf]
-    outputs:
-      is_perf: ${{ steps.detect-perf.outputs.is_perf }}
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: 'recursive'
 
-      - name: Detect if running on perf hardware
-        id: detect-perf
-        uses: ./.github/actions/detect-perf
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -62,10 +57,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: 'recursive'
-
-      - name: Detect if running on perf hardware
-        id: detect-perf
-        uses: ./.github/actions/detect-perf
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
