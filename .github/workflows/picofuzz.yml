@@ -26,9 +26,9 @@ concurrency:
 jobs:
   init:
     name: Initializing environment
-    runs-on: self-hosted
+    runs-on: [self-hosted, perf]
     outputs:
-      is_perf_runner: ${{ steps.detect-perf.outputs.is_perf }}
+      is_perf: ${{ steps.detect-perf.outputs.is_perf }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -52,7 +52,7 @@ jobs:
   picofuzz:
     needs: init
     name: Picofuzz Test
-    runs-on: self-hosted
+    runs-on: [self-hosted, perf]
     strategy:
       fail-fast: false
       matrix:
@@ -113,5 +113,3 @@ jobs:
           name: picofuzz-csv-${{ matrix.test }}
           path: ./picofuzz-result/${{ matrix.test }}.csv
           retention-days: 90
-        # Only upload results from perf hardware for aggregation
-        if: always() && steps.detect-perf.outputs.is_perf == 'true'
