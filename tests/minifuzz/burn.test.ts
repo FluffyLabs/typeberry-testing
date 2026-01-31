@@ -5,7 +5,7 @@ import type { ExternalProcess } from "../external-process.js";
 const TIMEOUT_MINUTES = 15;
 const timeout = TIMEOUT_MINUTES * 60 * 1_000;
 
-const EXAMPLES_DIR = "jam-conformance/fuzz-proto/examples/0.7.2/forks";
+const EXAMPLES_DIR = "picofuzz-conformance-data/jam-conformance/fuzz-proto/examples/0.7.2/forks";
 describe("Burn mode", { timeout }, () => {
   let typeberryProc: ExternalProcess | null = null;
   let minifuzzProc: ExternalProcess | null = null;

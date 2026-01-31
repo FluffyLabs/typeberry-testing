@@ -29,7 +29,7 @@ jobs:
           git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
 
           # Capture old commits
-          OLD_JAM_COMMIT=$(git -C jam-conformance rev-parse HEAD)
+          OLD_JAM_COMMIT=$(git -C picofuzz-conformance-data rev-parse HEAD)
           OLD_PICO_COMMIT=$(git -C picofuzz-data rev-parse HEAD)
 
           # Update submodules to latest commits on their default branches
@@ -42,7 +42,7 @@ jobs:
           fi
 
           # Capture new commits
-          NEW_JAM_COMMIT=$(git -C jam-conformance rev-parse HEAD)
+          NEW_JAM_COMMIT=$(git -C picofuzz-conformance-data rev-parse HEAD)
           NEW_PICO_COMMIT=$(git -C picofuzz-data rev-parse HEAD)
 
           # Update README with new commit hashes
@@ -61,7 +61,7 @@ jobs:
             This PR automatically updates the submodules to their latest versions.
 
             Updated submodules:
-            - jam-conformance
+            - picofuzz-conformance-data (including jam-conformance)
             - picofuzz-data (including jam-test-vectors)
 
             Please review the changes before merging.

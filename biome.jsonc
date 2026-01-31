@@ -60,7 +60,7 @@
   "files": {
     "includes": [
       "**",
-      "!jam-conformance/**",
+      "!picofuzz-conformance-data/**",
       "!picofuzz-data/**",
       "!**/dist/**/*",
       "!**/benchmarks/**/output/**/*",
