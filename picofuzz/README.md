@@ -49,7 +49,7 @@ npm start -f full -s results.csv ./fuzz-data /tmp/typeberry.sock
 npx @typeberry/jam fuzz-target
 
 # Select and execute some tests (data is available via submodules)
-npm start -r 3 ../picofuzz-data/picofuzz-data/safrole /tmp/jam_target.sock
+npm start -r 3 ../picofuzz-stf-data/picofuzz-data/safrole /tmp/jam_target.sock
 ```
 
 ## How It Works

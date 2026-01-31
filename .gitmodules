@@ -1,6 +1,6 @@
-[submodule "jam-conformance"]
-	path = jam-conformance
-	url = https://github.com/davxy/jam-conformance.git
-[submodule "picofuzz-data"]
-	path = picofuzz-data
-	url = git@github.com:FluffyLabs/picofuzz-data.git
+[submodule "picofuzz-stf-data"]
+	path = picofuzz-stf-data
+	url = https://github.com/FluffyLabs/picofuzz-data.git
+[submodule "picofuzz-conformance-data"]
+	path = picofuzz-conformance-data
+	url = https://github.com/FluffyLabs/picofuzz-conformance-data

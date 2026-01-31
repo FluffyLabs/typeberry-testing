@@ -51,7 +51,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        test: [fallback, safrole, storage, storage_light]
+        test: [fallback, safrole, storage, storage_light, conformance]
 
     steps:
       - uses: actions/checkout@v4
