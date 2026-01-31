@@ -30,7 +30,7 @@ jobs:
 
           # Capture old commits
           OLD_JAM_COMMIT=$(git -C picofuzz-conformance-data rev-parse HEAD)
-          OLD_PICO_COMMIT=$(git -C picofuzz-data rev-parse HEAD)
+          OLD_PICO_COMMIT=$(git -C picofuzz-stf-data rev-parse HEAD)
 
           # Update submodules to latest commits on their default branches
           git submodule update --remote --recursive
@@ -43,7 +43,7 @@ jobs:
 
           # Capture new commits
           NEW_JAM_COMMIT=$(git -C picofuzz-conformance-data rev-parse HEAD)
-          NEW_PICO_COMMIT=$(git -C picofuzz-data rev-parse HEAD)
+          NEW_PICO_COMMIT=$(git -C picofuzz-stf-data rev-parse HEAD)
 
           # Update README with new commit hashes
           sed -i "s|$OLD_JAM_COMMIT|$NEW_JAM_COMMIT|g" README.md
@@ -62,7 +62,7 @@ jobs:
 
             Updated submodules:
             - picofuzz-conformance-data (including jam-conformance)
-            - picofuzz-data (including jam-test-vectors)
+            - picofuzz-stf-data (including jam-test-vectors)
 
             Please review the changes before merging.
           branch: update-submodules

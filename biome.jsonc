@@ -61,7 +61,7 @@
     "includes": [
       "**",
       "!picofuzz-conformance-data/**",
-      "!picofuzz-data/**",
+      "!picofuzz-stf-data/**",
       "!**/dist/**/*",
       "!**/benchmarks/**/output/**/*",
       "!**/test-vectors/**/*",

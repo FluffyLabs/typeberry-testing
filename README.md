@@ -66,7 +66,7 @@ This repository uses the following submodules:
 
 - **[picofuzz-conformance-data](https://github.com/FluffyLabs/picofuzz-conformance-data)**
     JAM conformance traces for picofuzz execution.
-- **[picofuzz-data](https://github.com/FluffyLabs/picofuzz-data/commit/b3bdbb7a73e761d6ec07a12386b7faefdb95b28b)**
+- **[picofuzz-stf-data](https://github.com/FluffyLabs/picofuzz-data/commit/b3bdbb7a73e761d6ec07a12386b7faefdb95b28b)**
     JAM test vectors for picofuzz execution.
 
 ### Running All Tests
@@ -121,9 +121,9 @@ npm start -w @fluffylabs/picofuzz [options] <directory> <socket>
 #   -h, --help                Show help
 
 # Examples:
-npm start -w @fluffylabs/picofuzz picofuzz-data/picofuzz-data/fallback /tmp/jam_target.sock
-npm start -w @fluffylabs/picofuzz -r 10 picofuzz-data/picofuzz-data/safrole /tmp/jam_target.sock
-npm start -w @fluffylabs/picofuzz -s results.csv picofuzz-data/picofuzz-data/storage /tmp/jam_target.sock
+npm start -w @fluffylabs/picofuzz picofuzz-stf-data/picofuzz-data/fallback /tmp/jam_target.sock
+npm start -w @fluffylabs/picofuzz -r 10 picofuzz-stf-data/picofuzz-data/safrole /tmp/jam_target.sock
+npm start -w @fluffylabs/picofuzz -s results.csv picofuzz-stf-data/picofuzz-data/storage /tmp/jam_target.sock
 
 See more details about [picofuzz](./picofuzz).
 

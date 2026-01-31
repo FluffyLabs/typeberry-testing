@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "tsx ./index.ts",
-    "prepare-data": "../picofuzz-data/populate.sh",
+    "prepare-data": "../picofuzz-stf-data/populate.sh",
     "build-docker": "cp ../package-lock.json . && docker build -t picofuzz .",
     "test": "tsx --test $(find . -type d -name node_modules -prune -type f -o -name '*.test.ts' | tr '\\n' ' ')"
   },
