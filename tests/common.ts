@@ -84,7 +84,7 @@ export async function typeberry({
     "-v",
     `${sharedVolume}:/shared`,
     "ghcr.io/fluffylabs/typeberry:latest",
-    options.initGenesisFromAncestry === true ? "--init-genesis-from-ancestry" : "",
+    ...(options.initGenesisFromAncestry === true ? ["--init-genesis-from-ancestry"] : []),
     "fuzz-target",
     SOCKET_PATH,
   ).terminateAfter(timeout - 30_000);
