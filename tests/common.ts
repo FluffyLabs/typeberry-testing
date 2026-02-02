@@ -108,7 +108,7 @@ export async function minifuzz({
     "run",
     "--rm",
     "-v",
-    `${process.cwd()}/picofuzz-conformance-data/jam-conformance:/app/jam-conformance:ro`,
+    `${process.cwd()}/picofuzz-conformance-data:/app/picofuzz-conformance-data:ro`,
     "-v",
     `${sharedVolume}:/shared`,
     "minifuzz",
