@@ -15,6 +15,13 @@ export async function getBinFiles(directory: string): Promise<string[]> {
     }
   }
 
+  // Sort by filename
+  binFiles.sort((a, b) => {
+    const nameA = path.basename(a);
+    const nameB = path.basename(b);
+    return nameA.localeCompare(nameB);
+  });
+
   return binFiles;
 }
 

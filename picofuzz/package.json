@@ -13,7 +13,7 @@
   "license": "MPL-2.0",
   "type": "module",
   "dependencies": {
-    "@typeberry/lib": "^0.2.0",
+    "@typeberry/lib": "^0.5.4",
     "@types/minimist": "^1.2.5",
     "minimist": "^1.2.8"
   }
