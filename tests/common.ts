@@ -72,7 +72,7 @@ export async function typeberry({
   timeout: number;
   dockerArgs?: string[];
   sharedVolume?: string;
-  options?: { highMemory?: boolean };
+  options?: { highMemory?: boolean; initGenesisFromAncestry?: boolean };
 }) {
   const typeberry = ExternalProcess.spawn(
     "typeberry",
@@ -84,6 +84,7 @@ export async function typeberry({
     "-v",
     `${sharedVolume}:/shared`,
     "ghcr.io/fluffylabs/typeberry:latest",
+    options.initGenesisFromAncestry === true ? "--init-genesis-from-ancestry" : "",
     "fuzz-target",
     SOCKET_PATH,
   ).terminateAfter(timeout - 30_000);
