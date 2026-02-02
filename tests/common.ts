@@ -144,6 +144,8 @@ export async function picofuzz({
     "-v",
     `${process.cwd()}/picofuzz-stf-data:/app/picofuzz-stf-data:ro`,
     "-v",
+    `${process.cwd()}/picofuzz-conformance-data:/app/picofuzz-conformance-data:ro`,
+    "-v",
     `${process.cwd()}/picofuzz-result:/app/picofuzz-result`,
     "-v",
     `${sharedVolume}:/shared`,
