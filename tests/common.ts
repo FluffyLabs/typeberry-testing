@@ -84,8 +84,8 @@ export async function typeberry({
     "-v",
     `${sharedVolume}:/shared`,
     "ghcr.io/fluffylabs/typeberry:latest",
-    ...(options.initGenesisFromAncestry === true ? ["--init-genesis-from-ancestry"] : []),
     "fuzz-target",
+    ...(options.initGenesisFromAncestry === true ? ["--init-genesis-from-ancestry"] : []),
     SOCKET_PATH,
   ).terminateAfter(timeout - 30_000);
   await typeberry.waitForMessage(/IPC server is listening/);
