@@ -5,7 +5,11 @@ import type { ExternalProcess } from "../external-process.js";
 const timeout = 10 * 60 * 1000;
 const repeat = 10;
 
-export function runPicofuzzTest(name: string, directory: string) {
+export function runPicofuzzTest(
+  name: string,
+  directory: string,
+  { initGenesisFromAncestry }: { initGenesisFromAncestry?: boolean } = {},
+) {
   describe(`[picofuzz] ${name}`, { timeout }, () => {
     let typeberryProc: ExternalProcess | null = null;
     let picofuzzProc: ExternalProcess | null = null;
@@ -34,6 +38,9 @@ export function runPicofuzzTest(name: string, directory: string) {
       typeberryProc = await typeberry({
         timeout,
         sharedVolume: sharedVolume.name,
+        options: {
+          initGenesisFromAncestry,
+        },
       });
       picofuzzProc = await picofuzz({
         timeout,

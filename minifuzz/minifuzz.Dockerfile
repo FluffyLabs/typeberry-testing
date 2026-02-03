@@ -15,7 +15,7 @@ RUN git clone https://github.com/davxy/jam-types-py.git /tmp/jam-types-py && \
 WORKDIR /app
 
 # Copy the minifuzz script
-COPY jam-conformance/fuzz-proto/minifuzz/minifuzz.py /app/
+COPY picofuzz-conformance-data/jam-conformance/fuzz-proto/minifuzz/minifuzz.py /app/
 
 # Make the script executable
 RUN chmod +x minifuzz.py

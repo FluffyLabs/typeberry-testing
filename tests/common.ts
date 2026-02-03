@@ -72,7 +72,7 @@ export async function typeberry({
   timeout: number;
   dockerArgs?: string[];
   sharedVolume?: string;
-  options?: { highMemory?: boolean };
+  options?: { highMemory?: boolean; initGenesisFromAncestry?: boolean };
 }) {
   const typeberry = ExternalProcess.spawn(
     "typeberry",
@@ -85,6 +85,7 @@ export async function typeberry({
     `${sharedVolume}:/shared`,
     "ghcr.io/fluffylabs/typeberry:latest",
     "fuzz-target",
+    ...(options.initGenesisFromAncestry === true ? ["--init-genesis-from-ancestry"] : []),
     SOCKET_PATH,
   ).terminateAfter(timeout - 30_000);
   await typeberry.waitForMessage(/IPC server is listening/);
@@ -108,7 +109,7 @@ export async function minifuzz({
     "run",
     "--rm",
     "-v",
-    `${process.cwd()}/jam-conformance:/app/jam-conformance:ro`,
+    `${process.cwd()}/picofuzz-conformance-data:/app/picofuzz-conformance-data:ro`,
     "-v",
     `${sharedVolume}:/shared`,
     "minifuzz",
@@ -142,7 +143,9 @@ export async function picofuzz({
     "run",
     "--rm",
     "-v",
-    `${process.cwd()}/picofuzz-data:/app/picofuzz-data:ro`,
+    `${process.cwd()}/picofuzz-stf-data:/app/picofuzz-stf-data:ro`,
+    "-v",
+    `${process.cwd()}/picofuzz-conformance-data:/app/picofuzz-conformance-data:ro`,
     "-v",
     `${process.cwd()}/picofuzz-result:/app/picofuzz-result`,
     "-v",
