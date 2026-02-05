@@ -90,7 +90,8 @@ async function sendHandshake(spec: config.ChainSpec, socket: Socket) {
 
 async function handleRequest(spec: config.ChainSpec, socket: Socket, stats: Stats, filePath: string, fileData: Buffer) {
   const msgIn = decodeMessage(spec, fileData);
-  console.log(`[node] <-- ${MessageType[msgIn.type]} ${msgIn.value}`);
+  const valueTruncated = `${msgIn.value}`.substring(0, 4096);
+  console.log(`[node] <-- ${MessageType[msgIn.type]} ${valueTruncated}`);
 
   let response: Buffer = Buffer.alloc(0);
   const tookNs = await stats.measure(filePath, async () => {
