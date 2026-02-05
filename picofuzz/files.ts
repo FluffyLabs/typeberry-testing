@@ -15,11 +15,13 @@ export async function getBinFiles(directory: string): Promise<string[]> {
     }
   }
 
-  // Sort by filename
+  // Sort by filename using deterministic lexical comparison
   binFiles.sort((a, b) => {
     const nameA = path.basename(a);
     const nameB = path.basename(b);
-    return nameA.localeCompare(nameB);
+    if (nameA < nameB) return -1;
+    if (nameA > nameB) return 1;
+    return 0;
   });
 
   return binFiles;
