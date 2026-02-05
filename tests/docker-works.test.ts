@@ -26,7 +26,7 @@ describe("Docker image works", { timeout: TEST_TIMEOUT }, () => {
       "ghcr.io/fluffylabs/typeberry:latest",
       "fuzz-target",
     ).terminateAfter(TEST_TIMEOUT);
-    await proc.waitForMessage(/IPC server is listening/);
+    await proc.waitForMessage(/PVM Backend/);
     await proc.terminate();
   });
 });
