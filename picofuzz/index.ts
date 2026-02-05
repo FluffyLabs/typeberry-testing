@@ -84,14 +84,14 @@ async function handleJamTracesMode(spec: ChainSpec, socket: Socket, stats: Stats
       const isFirstFile = fileIndex === 0;
 
       const success = await processFile(file, async (filePath, fileData) => {
-        if (!isFirstFile) {
-          return handleJamTracesRequest(spec, socket, stats, filePath, fileData, isFirstFile);
+        const parsed = parseStfVector(new Uint8Array(fileData), spec);
+        if (isFirstFile) {
+          const init = await handleJamTracesRequest(spec, socket, stats, filePath, parsed.init);
+          const block = await handleJamTracesRequest(spec, socket, stats, filePath, parsed.block);
+          return init && block;
         }
 
-        const init = await handleJamTracesRequest(spec, socket, stats, filePath, fileData, true);
-        const block = await handleJamTracesRequest(spec, socket, stats, filePath, fileData, false);
-
-        return init && block;
+        return handleJamTracesRequest(spec, socket, stats, filePath, parsed.block);
       });
 
       if (!success) {
@@ -146,11 +146,8 @@ async function handleJamTracesRequest(
   socket: Socket,
   stats: Stats,
   filePath: string,
-  fileData: Buffer,
-  isFirstFile: boolean,
+  msgIn: fuzz_proto.v1.MessageData,
 ) {
-  const parsed = parseStfVector(new Uint8Array(fileData), spec);
-  const msgIn = isFirstFile ? parsed.init : parsed.block;
   const encoded = Encoder.encodeObject(messageCodec, msgIn, spec);
   console.log(`[node] <-- ${MessageType[msgIn.type]} ${msgIn.value}`);
 
