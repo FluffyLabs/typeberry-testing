@@ -3,12 +3,19 @@ import { createSharedVolume, picofuzz, typeberry } from "../common.js";
 import type { ExternalProcess } from "../external-process.js";
 
 const timeout = 10 * 60 * 1000;
-const repeat = 10;
 
 export function runPicofuzzTest(
   name: string,
   directory: string,
-  { initGenesisFromAncestry }: { initGenesisFromAncestry?: boolean } = {},
+  {
+    initGenesisFromAncestry,
+    repeat = 10,
+    noLogs = false,
+  }: {
+    initGenesisFromAncestry?: boolean;
+    repeat?: number;
+    noLogs?: boolean;
+  } = {},
 ) {
   describe(`[picofuzz] ${name}`, { timeout }, () => {
     let typeberryProc: ExternalProcess | null = null;
@@ -38,6 +45,7 @@ export function runPicofuzzTest(
       typeberryProc = await typeberry({
         timeout,
         sharedVolume: sharedVolume.name,
+        dockerArgs: noLogs ? ["-e", "JAM_LOG=info"] : [],
         options: {
           initGenesisFromAncestry,
         },
@@ -45,7 +53,7 @@ export function runPicofuzzTest(
       picofuzzProc = await picofuzz({
         timeout,
         dir: directory,
-        repeat: repeat,
+        repeat,
         sharedVolume: sharedVolume.name,
         statsFile: `${name}.csv`,
       });
