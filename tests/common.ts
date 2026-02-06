@@ -88,7 +88,7 @@ export async function typeberry({
     ...(options.initGenesisFromAncestry === true ? ["--init-genesis-from-ancestry"] : []),
     SOCKET_PATH,
   ).terminateAfter(timeout - 30_000);
-  await typeberry.waitForMessage(/IPC server is listening/);
+  await typeberry.waitForMessage(/PVM Backend/);
   return typeberry;
 }
 
