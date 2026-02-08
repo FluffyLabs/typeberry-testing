@@ -5,6 +5,7 @@ export type Args = {
   socket: string;
   repeat: number;
   flavour: "tiny" | "full";
+  mode: "default" | "jam-traces";
   output?: string;
 };
 
@@ -14,12 +15,14 @@ export function parseArgs(): Args {
       s: "stats",
       f: "flavour",
       r: "repeat",
+      m: "mode",
       h: "help",
     },
     default: {
       repeat: 1,
+      mode: "default",
     },
-    string: ["directory", "socket"],
+    string: ["directory", "socket", "mode"],
   });
 
   if (argv.help) {
@@ -27,6 +30,7 @@ export function parseArgs(): Args {
     console.log("");
     console.log("Options:");
     console.log("  -f, --flavour <spec>      JAM spec: tiny | full (default: tiny)");
+    console.log("  -m, --mode    <mode>      Processing mode: default | jam-traces (default: default)");
     console.log("  -r, --repeat  <count>     Number of repetitions (default: 1)");
     console.log("  -s, --stats   <file>      Append aggregated stats to a CSV file");
     console.log("  -h, --help                Show help");
@@ -41,6 +45,7 @@ export function parseArgs(): Args {
   const socket = argv._[1];
   const repeat = argv.repeat;
   const flavour = argv.flavour ?? "tiny";
+  const mode = argv.mode ?? "default";
   const output = argv.stats;
 
   if (!directory || !socket) {
@@ -62,11 +67,18 @@ export function parseArgs(): Args {
     process.exit(1);
   }
 
+  if (mode !== "default" && mode !== "jam-traces") {
+    console.error(`Invalid mode value: ${mode}`);
+    console.error("Must be either 'default' or 'jam-traces'");
+    process.exit(1);
+  }
+
   return {
     directory,
     socket,
     repeat,
     flavour,
+    mode,
     output,
   };
 }
