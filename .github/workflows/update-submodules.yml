@@ -28,10 +28,6 @@ jobs:
           git config --global user.name 'github-actions[bot]'
           git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
 
-          # Capture old commits
-          OLD_JAM_COMMIT=$(git -C picofuzz-conformance-data rev-parse HEAD)
-          OLD_PICO_COMMIT=$(git -C picofuzz-stf-data rev-parse HEAD)
-
           # Update submodules to latest commits on their default branches
           git submodule update --remote --recursive
 
@@ -45,9 +41,9 @@ jobs:
           NEW_JAM_COMMIT=$(git -C picofuzz-conformance-data rev-parse HEAD)
           NEW_PICO_COMMIT=$(git -C picofuzz-stf-data rev-parse HEAD)
 
-          # Update README with new commit hashes
-          sed -i "s|$OLD_JAM_COMMIT|$NEW_JAM_COMMIT|g" README.md
-          sed -i "s|$OLD_PICO_COMMIT|$NEW_PICO_COMMIT|g" README.md
+          # Update README with new commit hashes (match URL pattern for robustness)
+          sed -i "s|picofuzz-conformance-data/[0-9a-f]\{40\}|picofuzz-conformance-data/$NEW_JAM_COMMIT|g" README.md
+          sed -i "s|picofuzz-data/commit/[0-9a-f]\{40\}|picofuzz-data/commit/$NEW_PICO_COMMIT|g" README.md
 
           git add README.md
 
