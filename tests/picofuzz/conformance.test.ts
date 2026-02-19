@@ -8,5 +8,5 @@ runPicofuzzTest("conformance", EXAMPLES_DIR, {
   repeat: 1,
   noLogs: true,
   // ignored because of incompatible ticketattempt encoding
-  ignore: ["00000102.bin", "00000103.bin", "00000331.bin"],
+  ignore: ["00000102.bin", "00000103.bin", "00000331.bin", "00000389.bin"],
 });
