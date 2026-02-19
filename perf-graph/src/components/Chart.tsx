@@ -14,7 +14,7 @@ import {
   YAxis,
 } from "recharts";
 
-interface PerformanceData {
+export interface PerformanceData {
   projectName: string;
   date: string;
   count: number;
@@ -41,8 +41,24 @@ interface PerformanceData {
 const UNIT = "ms";
 const DIV = 1_000_000;
 
-export function Chart({ name }: { name: string }) {
+// Convert @typeberry/jam@0.5.6 -> v0.5.x
+function getMinorVersion(fullVersion: string): string {
+  const match = fullVersion.match(/@(\d+\.\d+)\.\d+$/);
+  if (match) {
+    return `v${match[1]}.x`;
+  }
+  return fullVersion;
+}
+
+interface ChartProps {
+  name: string;
+  visibleVersions: Set<string>;
+  onVersionsFound: (versions: string[]) => void;
+}
+
+export function Chart({ name, visibleVersions, onVersionsFound }: ChartProps) {
   const [data, setData] = useState<PerformanceData[]>([]);
+  const [allData, setAllData] = useState<PerformanceData[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -79,8 +95,11 @@ export function Chart({ name }: { name: string }) {
           const parse = (v: string) => Number.parseFloat((Number.parseInt(v) / DIV).toFixed(1));
           const parseF = (v: string) => Number.parseFloat(v) / DIV;
 
+          // Convert to minor version format (v0.5.x)
+          const minorVersion = getMinorVersion(projectName);
+
           return {
-            projectName,
+            projectName: minorVersion,
             date,
             count: parse(count),
             sum: parse(sum),
@@ -106,24 +125,9 @@ export function Chart({ name }: { name: string }) {
 
         parsedData.sort((a, b) => a.timestamp - b.timestamp);
 
-        // Group by version (projectName) and keep only last 5 results per version
-        const groupedByVersion = parsedData.reduce(
-          (acc, item) => {
-            if (!acc[item.projectName]) {
-              acc[item.projectName] = [];
-            }
-            acc[item.projectName].push(item);
-            return acc;
-          },
-          {} as Record<string, PerformanceData[]>,
-        );
-
-        // Take last 5 from each group
-        const limitedData = Object.values(groupedByVersion)
-          .flatMap((group) => group.slice(-5))
-          .sort((a, b) => a.timestamp - b.timestamp);
-
-        setData(limitedData);
+        const versions = Array.from(new Set(parsedData.map((d) => d.projectName)));
+        onVersionsFound(versions);
+        setAllData(parsedData);
       } catch (error) {
         console.error("Error loading CSV data:", error);
       } finally {
@@ -132,7 +136,33 @@ export function Chart({ name }: { name: string }) {
     };
 
     loadData();
-  }, [name]);
+  }, [name]); // Removed onVersionsFound from dependency array to avoid loop if it's not stable
+
+  useEffect(() => {
+    if (allData.length === 0) return;
+
+    // Filter by visible versions
+    const filteredData = allData.filter((item) => visibleVersions.has(item.projectName));
+
+    // Group by version (projectName) and keep only last 5 results per version
+    const groupedByVersion = filteredData.reduce(
+      (acc, item) => {
+        if (!acc[item.projectName]) {
+          acc[item.projectName] = [];
+        }
+        acc[item.projectName].push(item);
+        return acc;
+      },
+      {} as Record<string, PerformanceData[]>,
+    );
+
+    // Take last 5 from each group
+    const limitedData = Object.values(groupedByVersion)
+      .flatMap((group) => group.slice(-5))
+      .sort((a, b) => a.timestamp - b.timestamp);
+
+    setData(limitedData);
+  }, [allData, visibleVersions]);
 
   const formatXAxisLabel = (tickItem: number) => {
     return new Date(tickItem).toLocaleTimeString();
