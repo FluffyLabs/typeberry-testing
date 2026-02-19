@@ -136,7 +136,7 @@ export function Chart({ name, visibleVersions, onVersionsFound }: ChartProps) {
     };
 
     loadData();
-  }, [name]); // Removed onVersionsFound from dependency array to avoid loop if it's not stable
+  }, [name, onVersionsFound]);
 
   useEffect(() => {
     if (allData.length === 0) return;

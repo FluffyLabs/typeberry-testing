@@ -1,5 +1,5 @@
-import * as fs from "fs";
-import * as path from "path";
+import * as fs from "node:fs";
+import * as path from "node:path";
 
 interface CsvEntry {
   key: string;
@@ -82,7 +82,7 @@ function mergeCsvFiles(csvFileName: string, repoDir: string, artifactsDir: strin
     return a.date.localeCompare(b.date);
   });
 
-  const output = sortedEntries.map((e) => e.line).join("\n") + "\n";
+  const output = `${sortedEntries.map((e) => e.line).join("\n")}\n`;
   fs.writeFileSync(repoPath, output);
 
   return {
