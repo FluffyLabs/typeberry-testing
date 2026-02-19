@@ -7,6 +7,7 @@ export type Args = {
   flavour: "tiny" | "full";
   mode: "default" | "jam-traces";
   output?: string;
+  ignore: string[];
 };
 
 export function parseArgs(): Args {
@@ -22,7 +23,7 @@ export function parseArgs(): Args {
       repeat: 1,
       mode: "default",
     },
-    string: ["directory", "socket", "mode"],
+    string: ["directory", "socket", "mode", "ignore"],
   });
 
   if (argv.help) {
@@ -33,6 +34,7 @@ export function parseArgs(): Args {
     console.log("  -m, --mode    <mode>      Processing mode: default | jam-traces (default: default)");
     console.log("  -r, --repeat  <count>     Number of repetitions (default: 1)");
     console.log("  -s, --stats   <file>      Append aggregated stats to a CSV file");
+    console.log("  --ignore      <file>      Ignore specific .bin files (can be repeated)");
     console.log("  -h, --help                Show help");
     console.log("");
     console.log("Positional arguments:");
@@ -73,6 +75,9 @@ export function parseArgs(): Args {
     process.exit(1);
   }
 
+  const ignoreRaw = argv.ignore;
+  const ignore: string[] = ignoreRaw === undefined ? [] : Array.isArray(ignoreRaw) ? ignoreRaw : [ignoreRaw];
+
   return {
     directory,
     socket,
@@ -80,5 +85,6 @@ export function parseArgs(): Args {
     flavour,
     mode,
     output,
+    ignore,
   };
 }

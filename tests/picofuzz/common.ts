@@ -11,10 +11,12 @@ export function runPicofuzzTest(
     initGenesisFromAncestry,
     repeat = 10,
     noLogs = false,
+    ignore = [],
   }: {
     initGenesisFromAncestry?: boolean;
     repeat?: number;
     noLogs?: boolean;
+    ignore?: string[];
   } = {},
 ) {
   describe(`[picofuzz] ${name}`, { timeout }, () => {
@@ -56,6 +58,7 @@ export function runPicofuzzTest(
         repeat,
         sharedVolume: sharedVolume.name,
         statsFile: `${name}.csv`,
+        ignore,
       });
 
       await picofuzzProc.cleanExit;
