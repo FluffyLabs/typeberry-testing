@@ -50,100 +50,24 @@ jobs:
           run-id: ${{ github.event.workflow_run.id || inputs.workflow_run_id }}
         continue-on-error: true
 
-      - name: Merge CSV files
+      - name: Compile merge script
         run: |
-          # Create public directory if it doesn't exist
-          mkdir -p ./perf-graph/public
+          npx tsc scripts/merge-csvs.ts --outDir ./scripts-dist --esModuleInterop --module commonjs --target es2020 --moduleResolution node
+          mv ./scripts-dist/merge-csvs.js ./scripts-dist/merge-csvs.cjs
+        working-directory: ./perf-graph
 
-          # Node.js script to merge CSVs with deduplication
-          node << 'EOF'
-          const fs = require('fs');
-          const path = require('path');
-
-          const PUBLIC_DIR = './perf-graph/public';
-          const ARTIFACTS_DIR = './csv-artifacts';
-
-          // Get all CSV files from both directories
-          const repoCsvs = fs.existsSync(PUBLIC_DIR) 
-            ? fs.readdirSync(PUBLIC_DIR).filter(f => f.endsWith('.csv'))
-            : [];
-          const artifactCsvs = fs.existsSync(ARTIFACTS_DIR)
-            ? fs.readdirSync(ARTIFACTS_DIR).filter(f => f.endsWith('.csv'))
-            : [];
-
-          // Get unique CSV filenames
-          const allCsvFiles = new Set([...repoCsvs, ...artifactCsvs]);
-
-          console.log('Repository CSVs:', repoCsvs);
-          console.log('Artifact CSVs:', artifactCsvs);
-          console.log('All CSV files to process:', [...allCsvFiles]);
-
-          for (const csvFile of allCsvFiles) {
-            const repoPath = path.join(PUBLIC_DIR, csvFile);
-            const artifactPath = path.join(ARTIFACTS_DIR, csvFile);
-
-            const entries = new Map(); // Use Map to deduplicate by key
-
-            // Read existing repo data if file exists
-            if (fs.existsSync(repoPath)) {
-              const repoContent = fs.readFileSync(repoPath, 'utf-8');
-              const repoLines = repoContent.trim().split('\n').filter(line => line.length > 0);
-              
-              for (const line of repoLines) {
-                const parts = line.split(',');
-                if (parts.length >= 2) {
-                  // Key: projectName + date (first two columns)
-                  const key = `${parts[0]},${parts[1]}`;
-                  entries.set(key, line);
-                }
-              }
-              console.log(`  ${csvFile}: loaded ${repoLines.length} entries from repo`);
-            }
-
-            // Read and merge artifact data
-            if (fs.existsSync(artifactPath)) {
-              const artifactContent = fs.readFileSync(artifactPath, 'utf-8');
-              const artifactLines = artifactContent.trim().split('\n').filter(line => line.length > 0);
-              
-              let added = 0;
-              let duplicates = 0;
-              for (const line of artifactLines) {
-                const parts = line.split(',');
-                if (parts.length >= 2) {
-                  const key = `${parts[0]},${parts[1]}`;
-                  if (entries.has(key)) {
-                    duplicates++;
-                  } else {
-                    entries.set(key, line);
-                    added++;
-                  }
-                }
-              }
-              console.log(`  ${csvFile}: added ${added} new entries from artifacts, skipped ${duplicates} duplicates`);
-            }
-
-            // Sort by date (second column) and write back
-            const sortedEntries = Array.from(entries.values()).sort((a, b) => {
-              const dateA = a.split(',')[1];
-              const dateB = b.split(',')[1];
-              return dateA.localeCompare(dateB);
-            });
-
-            fs.writeFileSync(repoPath, sortedEntries.join('\n') + '\n');
-            console.log(`  ${csvFile}: total ${sortedEntries.length} entries written`);
-          }
-
-          console.log('\nFinal public directory contents:');
-          fs.readdirSync(PUBLIC_DIR).forEach(f => console.log('  -', f));
-          EOF
+      - name: Merge CSV files
+        run: node ./scripts-dist/merge-csvs.cjs
+        working-directory: ./perf-graph
 
       - name: List merged CSV files
         run: |
           echo "Files in public directory after merge:"
-          ls -la ./perf-graph/public/
+          ls -la ./public/
           echo ""
           echo "Line counts:"
-          wc -l ./perf-graph/public/*.csv
+          wc -l ./public/*.csv
+        working-directory: ./perf-graph
 
       - name: Build project
         run: npm run build
