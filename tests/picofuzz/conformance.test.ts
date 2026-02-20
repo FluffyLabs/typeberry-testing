@@ -7,6 +7,5 @@ runPicofuzzTest("conformance", EXAMPLES_DIR, {
   initGenesisFromAncestry: true,
   repeat: 1,
   noLogs: true,
-  // ignored because of incompatible ticketattempt encoding
-  ignore: ["00000102.bin", "00000103.bin", "00000331.bin", "00000389.bin", "00000961.bin", "00000962.bin"],
+  ignore: [],
 });
