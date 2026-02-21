@@ -30,7 +30,7 @@ async function main() {
   const spec = args.flavour === "tiny" ? tinyChainSpec : fullChainSpec;
 
   try {
-    const binFiles = await getBinFiles(args.directory);
+    const binFiles = await getBinFiles(args.directory, args.ignore);
     console.log(`Found ${binFiles.length} .bin files`);
 
     const peerName = await sendHandshake(spec, socket);

@@ -50,20 +50,24 @@ jobs:
           run-id: ${{ github.event.workflow_run.id || inputs.workflow_run_id }}
         continue-on-error: true
 
-      - name: Copy CSV files to public directory
+      - name: Compile merge script
         run: |
-          # Create public directory if it doesn't exist
-          mkdir -p ./perf-graph/public
+          npx tsc scripts/merge-csvs.ts --outDir ./scripts-dist --esModuleInterop --module commonjs --target es2020 --moduleResolution node
+          mv ./scripts-dist/merge-csvs.js ./scripts-dist/merge-csvs.cjs
+        working-directory: ./perf-graph
 
-          # Copy CSV files from artifacts if they exist
-          if [ -d "./csv-artifacts" ]; then
-            echo "Copying CSV files from artifacts..."
-            cp ./csv-artifacts/*.csv ./perf-graph/public/ 2>/dev/null || echo "No CSV files found in artifacts"
-          fi
+      - name: Merge CSV files
+        run: node ./scripts-dist/merge-csvs.cjs
+        working-directory: ./perf-graph
 
-          # List what's in public directory
-          echo "Files in public directory:"
-          ls -la ./perf-graph/public/
+      - name: List merged CSV files
+        run: |
+          echo "Files in public directory after merge:"
+          ls -la ./public/
+          echo ""
+          echo "Line counts:"
+          wc -l ./public/*.csv
+        working-directory: ./perf-graph
 
       - name: Build project
         run: npm run build

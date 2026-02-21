@@ -1,12 +1,13 @@
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
 
-export async function getBinFiles(directory: string): Promise<string[]> {
+export async function getBinFiles(directory: string, ignore: string[] = []): Promise<string[]> {
   const files = await fs.readdir(directory);
   const binFiles: string[] = [];
+  const ignoreSet = new Set(ignore);
 
   for (const file of files) {
-    if (file.endsWith(".bin")) {
+    if (file.endsWith(".bin") && !ignoreSet.has(file)) {
       const filePath = path.join(directory, file);
       const stats = await fs.stat(filePath);
       if (stats.isFile()) {

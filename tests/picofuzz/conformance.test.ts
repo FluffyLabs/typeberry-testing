@@ -7,4 +7,5 @@ runPicofuzzTest("conformance", EXAMPLES_DIR, {
   initGenesisFromAncestry: true,
   repeat: 1,
   noLogs: true,
+  ignore: [],
 });

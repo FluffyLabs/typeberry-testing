@@ -130,12 +130,14 @@ export async function picofuzz({
   sharedVolume = SHARED_VOLUME,
   timeout,
   statsFile,
+  ignore = [],
 }: {
   dir: string;
   repeat?: number;
   sharedVolume?: string;
   timeout: number;
   statsFile?: string;
+  ignore?: string[];
 }) {
   return ExternalProcess.spawn(
     "picofuzz",
@@ -152,6 +154,7 @@ export async function picofuzz({
     `${sharedVolume}:/shared`,
     "picofuzz",
     ...(statsFile ? [`--stats=/app/picofuzz-result/${statsFile}`] : []),
+    ...ignore.flatMap((f) => ["--ignore", f]),
     `--repeat=${repeat}`,
     `/app/${dir}`,
     SOCKET_PATH,

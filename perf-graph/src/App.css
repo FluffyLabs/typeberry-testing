@@ -47,3 +47,7 @@
   gap: 25px;
   grid-template-columns: auto auto;
 }
+
+.conformance-section {
+  margin-bottom: 25px;
+}
