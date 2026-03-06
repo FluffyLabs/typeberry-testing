@@ -32,10 +32,10 @@
   "homepage": "https://github.com/FluffyLabs/typeberry-testing#readme",
   "devDependencies": {
     "@biomejs/biome": "2.0.6",
-    "@tsconfig/node20": "20.1.4",
+    "@tsconfig/node24": "24.0.0",
     "@typeberry/convert": "^0.1.2-220a073",
     "@types/node": "^24.5.2",
     "tsx": "4.19.4",
-    "typescript": "5.6.3"
+    "typescript": "5.9.3"
   }
 }

@@ -30,7 +30,7 @@ jobs:
     outputs:
       is_perf_runner: ${{ steps.detect-perf.outputs.is_perf }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           submodules: 'recursive'
 
@@ -38,9 +38,9 @@ jobs:
         id: detect-perf
         uses: ./.github/actions/detect-perf
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: '20'
+          node-version: '24'
           cache: 'npm'
       - name: Install dependencies
         run: npm ci
@@ -59,7 +59,7 @@ jobs:
         test: [fallback, safrole, storage, storage_light]
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           submodules: 'recursive'
 
@@ -68,9 +68,9 @@ jobs:
         uses: ./.github/actions/detect-perf
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: '20'
+          node-version: '24'
           cache: 'npm'
 
       - name: Install dependencies
