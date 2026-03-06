@@ -45,7 +45,7 @@ jobs:
       workflow_run_id: ${{ steps.find-workflow-run.outputs.workflow_run_id }}
       is_perf_runner: ${{ steps.detect-perf.outputs.is_perf }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Detect if running on perf hardware
         id: detect-perf
@@ -134,7 +134,7 @@ jobs:
     needs: setup-docker-image
     runs-on: self-hosted
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           submodules: 'recursive'
 
@@ -143,9 +143,9 @@ jobs:
         uses: ./.github/actions/detect-perf
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: '20'
+          node-version: '24'
           cache: 'npm'
 
       - name: Run benchmark tests and generate report

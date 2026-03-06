@@ -1,5 +1,5 @@
-# Use Node.js 20 as the base image
-FROM node:20-alpine
+# Use Node.js 25 as the base image
+FROM node:25-alpine
 
 # Set working directory
 WORKDIR /app
