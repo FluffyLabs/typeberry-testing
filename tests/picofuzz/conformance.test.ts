@@ -8,4 +8,5 @@ runPicofuzzTest("conformance", EXAMPLES_DIR, {
   repeat: 1,
   noLogs: true,
   ignore: [],
+  highMemory: true,
 });

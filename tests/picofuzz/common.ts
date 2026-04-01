@@ -12,11 +12,13 @@ export function runPicofuzzTest(
     repeat = 10,
     noLogs = false,
     ignore = [],
+    highMemory = false,
   }: {
     initGenesisFromAncestry?: boolean;
     repeat?: number;
     noLogs?: boolean;
     ignore?: string[];
+    highMemory?: boolean;
   } = {},
 ) {
   describe(`[picofuzz] ${name}`, { timeout }, () => {
@@ -50,6 +52,7 @@ export function runPicofuzzTest(
         dockerArgs: noLogs ? ["-e", "JAM_LOG=info"] : [],
         options: {
           initGenesisFromAncestry,
+          highMemory,
         },
       });
       picofuzzProc = await picofuzz({
