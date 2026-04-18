@@ -44,7 +44,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           pattern: picofuzz-csv-*
-          path: ./csv-artifacts
+          path: ./perf-graph/csv-artifacts
           github-token: ${{ secrets.ARTIFACTS_PAT }}
           merge-multiple: true
           run-id: ${{ github.event.workflow_run.id || inputs.workflow_run_id }}
