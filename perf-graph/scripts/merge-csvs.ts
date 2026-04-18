@@ -104,11 +104,20 @@ function main(): void {
   console.log("CSV Merge Tool");
   console.log("==============\n");
 
-  // Get all CSV files from both directories
+  if (!fs.existsSync(ARTIFACTS_DIR)) {
+    console.error(`Error: artifacts directory "${ARTIFACTS_DIR}" does not exist.`);
+    console.error("Picofuzz CSV artifacts must be downloaded before running this script.");
+    process.exit(1);
+  }
+
   const repoCsvs = getCsvFiles(PUBLIC_DIR);
   const artifactCsvs = getCsvFiles(ARTIFACTS_DIR);
 
-  // Get unique CSV filenames
+  if (artifactCsvs.length === 0) {
+    console.error(`Error: artifacts directory "${ARTIFACTS_DIR}" contains no CSV files.`);
+    process.exit(1);
+  }
+
   const allCsvFiles = new Set([...repoCsvs, ...artifactCsvs]);
 
   console.log("Repository CSVs:", repoCsvs);
