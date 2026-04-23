@@ -86,7 +86,7 @@ jobs:
           GH_REPO: ${{ github.repository }}
       - run: mkdir ./picofuzz-result && chmod 777 ./picofuzz-result
       - name: Download previous CSV files
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: picofuzz-csv-${{ matrix.test }}
           path: ./picofuzz-result/
@@ -99,7 +99,7 @@ jobs:
           npm exec tsx --test tests/picofuzz/${{ matrix.test }}.test.ts
 
       - name: Upload CSV results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: picofuzz-csv-${{ matrix.test }}
           path: ./picofuzz-result/${{ matrix.test }}.csv
