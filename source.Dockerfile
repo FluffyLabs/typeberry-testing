@@ -14,4 +14,7 @@ RUN git clone https://github.com/FluffyLabs/typeberry . \
     && git checkout "$TYPEBERRY_REF"
 RUN npm ci
 RUN mkdir -p ./database && chmod 777 ./database
+# Default entrypoint runs the jam node; the conformance / test-vectors suites
+# that use this image override it with `--entrypoint /bin/bash` to invoke the
+# `@typeberry/test-runner` workspace scripts.
 ENTRYPOINT ["npm", "start", "--"]
