@@ -6,6 +6,11 @@ on:
   pull_request:
       branches: [ main ]
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'typeberry version: `next` (default), `<semver>-<sha>` (pre-release), or `<semver>` (release)'
+        required: false
+        default: 'next'
   repository_dispatch:
   schedule:
     # 8:00 AM Europe/Warsaw (6:00 UTC, using UTC+2 summer time)
@@ -38,8 +43,11 @@ jobs:
           cache: 'npm'
       - name: Install dependencies
         run: npm ci
-      - name: Fetch Typeberry Docker image
-        run: npm run fetch-typeberry
+      - name: Provision Typeberry image
+        uses: ./.github/actions/provision-typeberry
+        with:
+          target: docker
+          version: ${{ github.event.inputs.version || 'next' }}
 
   docker-works:
     needs: init
