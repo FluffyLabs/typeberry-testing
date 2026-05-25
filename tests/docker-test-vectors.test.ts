@@ -1,4 +1,5 @@
 import { describe, it } from "node:test";
+import { TYPEBERRY_IMAGE } from "./common.js";
 import { ExternalProcess } from "./external-process.js";
 
 const TEST_TIMEOUT = 20 * 60 * 1_000;
@@ -14,7 +15,7 @@ describe("Docker can execute tests", { timeout: TEST_TIMEOUT }, () => {
       "--rm",
       "--entrypoint",
       "/bin/bash",
-      "ghcr.io/fluffylabs/typeberry:latest",
+      TYPEBERRY_IMAGE,
       "-c",
       "npm run w3f-davxy:0.7.2 -w @typeberry/test-runner ../tests/traces/**/*.json",
     ).terminateAfter(TEST_TIMEOUT);

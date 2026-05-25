@@ -4,6 +4,13 @@ import { ExternalProcess } from "./external-process.js";
 const SOCKET_PATH = "/shared/jam_target.sock";
 const SHARED_VOLUME = "jam-ipc-volume";
 
+/**
+ * Docker image under test. Defaults to the locally-provisioned `typeberry:test`
+ * (built/fetched by the provision-typeberry action). Set TYPEBERRY_IMAGE to
+ * override (e.g. pr-benchmark tags its loaded artifact `typeberry:test`).
+ */
+export const TYPEBERRY_IMAGE = process.env.TYPEBERRY_IMAGE ?? "typeberry:test";
+
 const DOCKER_OPTIONS = (mem = "512m") => [
   "--cpu-shares",
   "2048",
@@ -83,7 +90,7 @@ export async function typeberry({
     ...DOCKER_OPTIONS(options.highMemory ? "2048m" : "512m"),
     "-v",
     `${sharedVolume}:/shared`,
-    "ghcr.io/fluffylabs/typeberry:latest",
+    TYPEBERRY_IMAGE,
     "fuzz-target",
     ...(options.initGenesisFromAncestry === true ? ["--init-genesis-from-ancestry"] : []),
     SOCKET_PATH,
