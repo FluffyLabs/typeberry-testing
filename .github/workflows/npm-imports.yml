@@ -1,4 +1,4 @@
-name: NPM Works
+name: NPM Imports
 
 on:
   push:
@@ -44,9 +44,9 @@ jobs:
           target: npm
           version: ${{ github.event.inputs.version || 'next' }}
 
-  npm-works:
+  npm-imports:
     needs: init
-    name: NPM Works Test
+    name: NPM Imports Test
     runs-on: [self-hosted, non-perf]
     steps:
       - uses: actions/checkout@v6
@@ -59,6 +59,6 @@ jobs:
           cache: 'npm'
       - name: Install dependencies
         run: npm ci
-      - name: Run Works test (npm image)
+      - name: Run Imports test (npm image)
         run: |
-          npm exec tsx --test tests/docker-works.test.ts
+          npm exec tsx --test tests/docker-imports.test.ts
