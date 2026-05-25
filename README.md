@@ -9,7 +9,8 @@ Check out our performance statistics over time at [typeberry.fluffylabs.dev](htt
 [![Minifuzz Tests](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/minifuzz.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/minifuzz.yml)
 [![Picofuzz Tests](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/picofuzz.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/picofuzz.yml)
 [![NPM Works](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/npm-works.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/npm-works.yml)
-[![NPM @next Works](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/npm-next-works.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/npm-next-works.yml)
+[![NPM Imports](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/npm-imports.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/npm-imports.yml)
+[![NPM Minifuzz Tests](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/npm-minifuzz.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/npm-minifuzz.yml)
 [![Docker Works](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/docker-works.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/docker-works.yml)
 [![Docker Imports](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/docker-imports.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/docker-imports.yml)
 [![Docker Conformance](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/docker-conformance.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/docker-conformance.yml)
@@ -22,7 +23,8 @@ Check out our performance statistics over time at [typeberry.fluffylabs.dev](htt
 | **Docker Conformance** | [![Docker Conformance](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/docker-conformance.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/docker-conformance.yml) | Tests JAM conformance using Docker with latest conformance test suite |
 | **Docker Test Vectors** | [![Docker Test Vectors](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/docker-test-vectors.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/docker-test-vectors.yml) | Tests W3F test vectors using Docker with latest test suite |
 | **NPM Works** | [![NPM Works](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/npm-works.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/npm-works.yml) | Tests NPM package installation and basic functionality |
-| **NPM @next Works** | [![NPM @next Works](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/npm-next-works.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/npm-next-works.yml) | Tests NPM @next package installation and basic functionality |
+| **NPM Imports** | [![NPM Imports](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/npm-imports.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/npm-imports.yml) | NPM package (in a thin docker image) imports standard block dumps |
+| **NPM Minifuzz Tests** | [![NPM Minifuzz Tests](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/npm-minifuzz.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/npm-minifuzz.yml) | Minifuzz against the NPM package (thin docker image) |
 | **Picofuzz Fallback** | [![Picofuzz Tests](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/picofuzz.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/picofuzz.yml) | Tests fallback functionality using prepared fuzz messages |
 | **Picofuzz Safrole** | [![Picofuzz Tests](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/picofuzz.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/picofuzz.yml) | Tests Safrole protocol implementation with fuzzing |
 | **Picofuzz Storage** | [![Picofuzz Tests](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/picofuzz.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/picofuzz.yml) | Tests storage functionality with comprehensive fuzzing |
@@ -56,8 +58,10 @@ git submodule update --init --recursive
 # Install dependencies
 npm install
 
-# Fetch the latest Typeberry Docker image
-npm run fetch-typeberry
+# Provision the typeberry image under test (tagged `typeberry:test`).
+# TARGET: docker (published image) | npm (npm package, wrapped in a docker image) | source (build w/ test-runner)
+# VERSION: defaults to `next` (latest main); pin with `<semver>-<sha>` or `<semver>`.
+TARGET=npm bash .github/actions/provision-typeberry/provision.sh
 ```
 
 #### Submodules
@@ -86,12 +90,6 @@ npm exec tsx --test tests/docker-conformance.test.ts
 
 # Docker test vectors
 npm exec tsx --test tests/docker-test-vectors.test.ts
-
-# NPM package tests
-npm exec tsx --test tests/npm-works.test.ts
-
-# NPM @next package tests
-npm exec tsx --test tests/npm-next-works.test.ts
 
 # Picofuzz tests
 npm exec tsx --test tests/picofuzz/fallback.test.ts
@@ -164,8 +162,6 @@ curl -X POST \
 │   ├── docker-works.test.ts        # Docker image functionality tests
 │   ├── docker-conformance.test.ts  # JAM conformance tests using Docker
 │   ├── docker-test-vectors.test.ts # W3F test vectors using Docker
-│   ├── npm-works.test.ts           # NPM package tests
-│   ├── npm-next-works.test.ts      # NPM @next package tests
 │   ├── picofuzz/                   # Performance testing
 │   │   ├── common.ts               # Common utilities for picofuzz tests
 │   │   ├── fallback.test.ts        # Fallback performance

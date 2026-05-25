@@ -120,13 +120,13 @@ jobs:
         run: |
           gunzip ./docker-image/typeberry-image.tar.gz
           docker load -i ./docker-image/typeberry-image.tar
-          # Tag the image as latest so existing tests work
+          # Tag as the image the tests resolve via TYPEBERRY_IMAGE (default).
           IMAGE_ID=$(docker images --format "{{.ID}}" typeberry | head -n 1)
           if [ -z "$IMAGE_ID" ]; then
             echo "Error: No typeberry image found after loading"
             exit 1
           fi
-          docker tag $IMAGE_ID ghcr.io/fluffylabs/typeberry:latest
+          docker tag $IMAGE_ID typeberry:test
           docker images | grep typeberry
 
   benchmark:
