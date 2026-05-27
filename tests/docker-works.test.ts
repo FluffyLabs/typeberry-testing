@@ -13,7 +13,7 @@ describe("Docker image works", { timeout: TEST_TIMEOUT }, () => {
     await proc.waitForMessage(/typeberry\/jam.*by Fluffy Labs/);
   });
 
-  it("should start fuzz target and gracefuly stop", async () => {
+  it("should start fuzz target and gracefully stop", async () => {
     const proc = ExternalProcess.spawn(
       "docker",
       "docker",

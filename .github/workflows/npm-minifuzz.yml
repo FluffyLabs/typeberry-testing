@@ -23,16 +23,24 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
-  init:
-    name: Initializing environment
+  minifuzz:
+    name: NPM Minifuzz Tests
     runs-on: [self-hosted, non-perf]
+    strategy:
+      fail-fast: false
+      matrix:
+        test: [burn, forks, no_forks]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
+          persist-credentials: false
           submodules: 'recursive'
       - name: Setup Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
         with:
           node-version: '24'
           cache: 'npm'
@@ -45,26 +53,6 @@ jobs:
           version: ${{ github.event.inputs.version || 'next' }}
       - name: Build minifuzz
         run: npm run build -w minifuzz
-
-  minifuzz:
-    needs: init
-    name: NPM Minifuzz Tests
-    runs-on: [self-hosted, non-perf]
-    strategy:
-      fail-fast: false
-      matrix:
-        test: [burn, forks, no_forks]
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          submodules: 'recursive'
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: '24'
-          cache: 'npm'
-      - name: Install dependencies
-        run: npm ci
       - name: Run Minifuzz ${{ matrix.test }} test (npm image)
         run: |
           npm exec tsx --test tests/minifuzz/${{ matrix.test }}.test.ts
