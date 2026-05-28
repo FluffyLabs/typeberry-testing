@@ -60,7 +60,7 @@ jobs:
             echo "pr_number=${{ github.event.client_payload.pr_number }}" >> $GITHUB_OUTPUT
           fi
 
-      - name: Find latest build-docker workflow run
+      - name: Find latest Build & Publish workflow run
         id: find-workflow-run
         env:
           GH_TOKEN: ${{ secrets.TYPEBERRY_PAT }}
@@ -75,32 +75,32 @@ jobs:
           HEAD_BRANCH=$(echo "$PR_DATA" | jq -r '.head.ref')
           echo "PR #$PR_NUMBER branch: $HEAD_BRANCH"
 
-          # Get the workflow ID for build-docker
+          # Get the workflow ID for Build & Publish (docker artifact lives here since typeberry#972)
           WORKFLOW_ID=$(curl -s \
             -H "Authorization: token $GH_TOKEN" \
             -H "Accept: application/vnd.github.v3+json" \
             "https://api.github.com/repos/fluffylabs/typeberry/actions/workflows" \
-            | jq -r '.workflows[] | select(.name == "Build - Docker" or (.path | endswith("build-docker.yml"))) | .id' \
+            | jq -r '.workflows[] | select(.name == "Build & Publish" or (.path | endswith("publish.yml"))) | .id' \
             | head -n 1)
 
           if [ -z "$WORKFLOW_ID" ]; then
-            echo "Error: Could not find build-docker workflow"
+            echo "Error: Could not find Build & Publish workflow"
             exit 1
           fi
 
-          echo "build-docker workflow ID: $WORKFLOW_ID"
+          echo "Build & Publish workflow ID: $WORKFLOW_ID"
 
           # Find the latest successful workflow run for this branch with artifacts
           WORKFLOW_RUN_ID=$(curl -s \
             -H "Authorization: token $GH_TOKEN" \
             -H "Accept: application/vnd.github.v3+json" \
-            "https://api.github.com/repos/fluffylabs/typeberry/actions/workflows/$WORKFLOW_ID/runs?branch=$HEAD_BRANCH&status=success&per_page=10" \
+            "https://api.github.com/repos/fluffylabs/typeberry/actions/workflows/$WORKFLOW_ID/runs?branch=$HEAD_BRANCH&event=pull_request&status=success&per_page=10" \
             | jq -r '.workflow_runs[] | select(.artifacts_url != null) | .id' \
             | head -n 1)
 
           if [ -z "$WORKFLOW_RUN_ID" ]; then
-            echo "Error: Could not find successful build-docker workflow run for branch $HEAD_BRANCH"
-            echo "Please ensure the build-docker workflow has completed successfully for this PR"
+            echo "Error: Could not find successful Build & Publish workflow run for branch $HEAD_BRANCH"
+            echo "Please ensure the Build & Publish workflow has completed successfully for this PR"
             exit 1
           fi
 
