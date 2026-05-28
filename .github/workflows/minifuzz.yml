@@ -6,6 +6,11 @@ on:
   pull_request:
       branches: [ main ]
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'typeberry version: `next` (default), `<semver>-<sha>` (pre-release), or `<semver>` (release)'
+        required: false
+        default: 'next'
   repository_dispatch:
   schedule:
     # 8:00 AM Europe/Warsaw (6:00 UTC, using UTC+2 summer time)
@@ -24,27 +29,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  init:
-    name: Initializing environment
-    runs-on: [self-hosted, non-perf]
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          submodules: 'recursive'
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: '24'
-          cache: 'npm'
-      - name: Install dependencies
-        run: npm ci
-      - name: Fetch Typeberry Docker image
-        run: npm run fetch-typeberry
-      - name: Build minifuzz
-        run: npm run build -w minifuzz
-
   minifuzz:
-    needs: init
     name: Minifuzz Tests
     runs-on: [self-hosted, non-perf]
     strategy:
@@ -64,6 +49,15 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Provision Typeberry image
+        uses: ./.github/actions/provision-typeberry
+        with:
+          target: docker
+          version: ${{ github.event.inputs.version || 'next' }}
+
+      - name: Build minifuzz
+        run: npm run build -w minifuzz
 
       - name: Run Minifuzz ${{ matrix.test }} test
         run: |

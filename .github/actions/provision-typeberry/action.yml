@@ -1,0 +1,18 @@
+name: Provision Typeberry image
+description: Fetch or build the typeberry image for a version and tag it `typeberry:test`.
+inputs:
+  target:
+    description: 'docker | npm | source'
+    required: true
+  version:
+    description: 'next (default) | <semver>-<sha> | <semver>'
+    required: false
+    default: 'next'
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      run: bash "${{ github.action_path }}/provision.sh"
+      env:
+        TARGET: ${{ inputs.target }}
+        VERSION: ${{ inputs.version }}

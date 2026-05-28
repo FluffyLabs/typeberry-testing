@@ -1,4 +1,5 @@
 import { describe, it } from "node:test";
+import { TYPEBERRY_IMAGE } from "./common.js";
 import { ExternalProcess } from "./external-process.js";
 
 const TEST_TIMEOUT = 5 * 60 * 1_000;
@@ -13,7 +14,7 @@ describe("Docker image can import block dumps", { timeout: TEST_TIMEOUT }, () =>
         "--mount",
         "type=bind,src=./block-dumps,dst=/block-dumps,readonly",
         "--rm",
-        "ghcr.io/fluffylabs/typeberry:latest",
+        TYPEBERRY_IMAGE,
         "--config=default",
         "--config=.chain_spec=/block-dumps/chain-spec.json",
         "import",
