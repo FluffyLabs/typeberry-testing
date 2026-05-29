@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Provision the typeberry image under test as `typeberry:test`.
+# Provision the typeberry image under test: `typeberry:test` for the docker/npm
+# targets, `typeberry:source` for the source target (see the IMAGE note below).
 #
 # Inputs (env):
 #   TARGET   docker | npm | source
@@ -14,8 +15,22 @@ set -euo pipefail
 TARGET="${TARGET:?set TARGET to docker|npm|source}"
 VERSION="${VERSION:-next}"
 ROOT="${GITHUB_WORKSPACE:-$PWD}"
-IMAGE="typeberry:test"
 REPO_URL="https://github.com/FluffyLabs/typeberry"
+
+# Image tag the test suites consume. The docker and npm targets are
+# interchangeable in shape (a global `jam` bin, published-artifact layout), so
+# they share the `typeberry:test` tag. The source target is NOT: it ships the
+# `@typeberry/test-runner` workspace under /app (with package.json), which the
+# conformance / test-vectors suites invoke. It must live under its own tag so the
+# docker/npm workflows — which run on the same cron and share the self-hosted
+# runner's docker daemon — cannot overwrite `typeberry:test` out from under those
+# suites mid-run (that race surfaced as `/app/package.json ENOENT` and
+# `No workspaces found: --workspace=@typeberry/test-runner`).
+if [ "$TARGET" = "source" ]; then
+  IMAGE="typeberry:source"
+else
+  IMAGE="typeberry:test"
+fi
 
 if [ "$VERSION" = "next" ]; then
   DOCKER_TAG="next"; NPM_VERSION="next"; SRC_REF="main"
