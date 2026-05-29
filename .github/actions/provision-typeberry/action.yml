@@ -1,5 +1,5 @@
 name: Provision Typeberry image
-description: Fetch or build the typeberry image for a version and tag it `typeberry:test`.
+description: Fetch or build the typeberry image for a version and tag it `typeberry:test` (docker/npm) or `typeberry:source` (source).
 inputs:
   target:
     description: 'docker | npm | source'

@@ -71,5 +71,9 @@ jobs:
         run: npm ci
 
       - name: Run Docker Test Vectors test
+        env:
+          # Consume the isolated source image (see provision-typeberry/provision.sh);
+          # the shared `typeberry:test` tag is owned by the docker/npm workflows.
+          TYPEBERRY_IMAGE: typeberry:source
         run: |
           npm exec tsx --test tests/docker-test-vectors.test.ts
