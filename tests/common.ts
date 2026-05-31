@@ -1,8 +1,56 @@
 import { execSync } from "node:child_process";
+import { randomBytes } from "node:crypto";
 import { ExternalProcess } from "./external-process.js";
 
 const SOCKET_PATH = "/shared/jam_target.sock";
 const SHARED_VOLUME = "jam-ipc-volume";
+
+// Tag every docker resource we create so the workflow-level post-step can
+// reliably reap survivors even when the test process is SIGKILL'd.
+const CI_RUN_ID = process.env.GITHUB_RUN_ID ?? "local";
+export const CI_LABEL = `ci-run=${CI_RUN_ID}`;
+
+export function uniqueContainerName(prefix: string) {
+  return `tb-${prefix}-${CI_RUN_ID}-${randomBytes(4).toString("hex")}`;
+}
+
+// Containers we created in this process. Drained by the signal/exit handlers
+// below so an interrupted node run doesn't leave the docker daemon babysitting
+// our containers.
+const trackedContainers = new Set<string>();
+
+export function registerContainer(name: string) {
+  trackedContainers.add(name);
+}
+
+export function killContainer(name: string) {
+  try {
+    execSync(`docker rm -f ${name}`, { stdio: "ignore" });
+  } catch {
+    // Container may already be gone (--rm fired, or never started). That's fine.
+  }
+  trackedContainers.delete(name);
+}
+
+function reapAllTrackedSync() {
+  for (const name of trackedContainers) {
+    try {
+      execSync(`docker rm -f ${name}`, { stdio: "ignore" });
+    } catch {}
+  }
+  trackedContainers.clear();
+}
+
+process.on("exit", reapAllTrackedSync);
+for (const sig of ["SIGINT", "SIGTERM", "SIGHUP"] as const) {
+  process.on(sig, () => {
+    reapAllTrackedSync();
+    // Once a signal handler is registered Node skips the default exit, so do it
+    // ourselves. The reap above already drained tracked containers; the "exit"
+    // handler firing a second time is a harmless no-op.
+    process.exit(1);
+  });
+}
 
 /**
  * Docker image under test. Defaults to the locally-provisioned `typeberry:test`
@@ -52,10 +100,18 @@ export function createSharedVolume(name = "") {
   } catch {
     // Volume might not exist, ignore
   }
-  execSync(`docker volume create ${volumeName}`);
+  execSync(`docker volume create --label ${CI_LABEL} ${volumeName}`);
 
   // Initialize the volume with proper permissions
-  execSync(`docker run --rm -v ${volumeName}:/shared alpine sh -c "mkdir -p /shared && chmod 777 /shared"`);
+  const initName = uniqueContainerName("volinit");
+  trackedContainers.add(initName);
+  try {
+    execSync(
+      `docker run --rm --name ${initName} --label ${CI_LABEL} -v ${volumeName}:/shared alpine sh -c "mkdir -p /shared && chmod 777 /shared"`,
+    );
+  } finally {
+    trackedContainers.delete(initName);
+  }
 
   return {
     name: volumeName,
@@ -81,11 +137,17 @@ export async function typeberry({
   sharedVolume?: string;
   options?: { highMemory?: boolean; initGenesisFromAncestry?: boolean };
 }) {
+  const containerName = uniqueContainerName("typeberry");
+  trackedContainers.add(containerName);
   const typeberry = ExternalProcess.spawn(
     "typeberry",
     "docker",
     "run",
     "--rm",
+    "--name",
+    containerName,
+    "--label",
+    CI_LABEL,
     ...dockerArgs,
     ...DOCKER_OPTIONS(options.highMemory ? "2048m" : "512m"),
     "-v",
@@ -94,7 +156,9 @@ export async function typeberry({
     "fuzz-target",
     ...(options.initGenesisFromAncestry === true ? ["--init-genesis-from-ancestry"] : []),
     SOCKET_PATH,
-  ).terminateAfter(timeout - 30_000);
+  )
+    .terminateAfter(timeout - 30_000)
+    .onTerminate(() => killContainer(containerName));
   await typeberry.waitForMessage(/PVM Backend/);
   return typeberry;
 }
@@ -110,11 +174,17 @@ export async function minifuzz({
   sharedVolume?: string;
   timeout: number;
 }) {
+  const containerName = uniqueContainerName("minifuzz");
+  trackedContainers.add(containerName);
   return ExternalProcess.spawn(
     "minifuzz",
     "docker",
     "run",
     "--rm",
+    "--name",
+    containerName,
+    "--label",
+    CI_LABEL,
     "-v",
     `${process.cwd()}/picofuzz-conformance-data:/app/picofuzz-conformance-data:ro`,
     "-v",
@@ -128,7 +198,9 @@ export async function minifuzz({
     `${stopAfter}`,
     "--spec",
     "tiny",
-  ).terminateAfter(timeout - 10_000);
+  )
+    .terminateAfter(timeout - 10_000)
+    .onTerminate(() => killContainer(containerName));
 }
 
 export async function picofuzz({
@@ -146,11 +218,17 @@ export async function picofuzz({
   statsFile?: string;
   ignore?: string[];
 }) {
+  const containerName = uniqueContainerName("picofuzz");
+  trackedContainers.add(containerName);
   return ExternalProcess.spawn(
     "picofuzz",
     "docker",
     "run",
     "--rm",
+    "--name",
+    containerName,
+    "--label",
+    CI_LABEL,
     "-v",
     `${process.cwd()}/picofuzz-stf-data:/app/picofuzz-stf-data:ro`,
     "-v",
@@ -165,5 +243,7 @@ export async function picofuzz({
     `--repeat=${repeat}`,
     `/app/${dir}`,
     SOCKET_PATH,
-  ).terminateAfter(timeout - 10_000);
+  )
+    .terminateAfter(timeout - 10_000)
+    .onTerminate(() => killContainer(containerName));
 }

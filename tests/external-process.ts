@@ -19,6 +19,7 @@ export class ExternalProcess {
   }
 
   public readonly cleanExit: Promise<void>;
+  private readonly cleanupCallbacks: Array<() => void | Promise<void>> = [];
 
   private constructor(
     private readonly processName: string,
@@ -30,6 +31,9 @@ export class ExternalProcess {
       });
 
       spawned.on("exit", (code, signal) => {
+        // Fire cleanup hooks on any exit path (clean or otherwise) so e.g.
+        // docker containers don't outlive the CLI process that spawned them.
+        void this.runCleanup();
         if (code === 0) {
           resolve();
         } else if (code !== 143 && signal !== "SIGTERM" && signal !== "SIGKILL" && signal !== "SIGPIPE") {
@@ -40,6 +44,22 @@ export class ExternalProcess {
         }
       });
     });
+  }
+
+  onTerminate(fn: () => void | Promise<void>) {
+    this.cleanupCallbacks.push(fn);
+    return this;
+  }
+
+  private async runCleanup() {
+    const pending = this.cleanupCallbacks.splice(0);
+    for (const cb of pending) {
+      try {
+        await cb();
+      } catch (err) {
+        console.error(`[${this.processName}] cleanup hook failed:`, err);
+      }
+    }
   }
 
   async waitForMessage(pattern: RegExp, check: (match: RegExpMatchArray) => boolean = () => true) {
@@ -77,6 +97,7 @@ export class ExternalProcess {
         this.spawned.kill("SIGKILL");
       });
     }
+    await this.runCleanup();
   }
 
   terminateAfter(timeoutMs: number) {

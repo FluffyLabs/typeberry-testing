@@ -77,3 +77,9 @@ jobs:
           TYPEBERRY_IMAGE: typeberry:source
         run: |
           npm exec tsx --test tests/docker-test-vectors.test.ts
+
+      - name: Reap test containers and volumes
+        if: always()
+        run: |
+          docker ps -aq --filter "label=ci-run=${{ github.run_id }}" | xargs -r docker rm -f
+          docker volume ls -q --filter "label=ci-run=${{ github.run_id }}" | xargs -r docker volume rm -f
