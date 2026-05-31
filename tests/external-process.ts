@@ -20,6 +20,7 @@ export class ExternalProcess {
 
   public readonly cleanExit: Promise<void>;
   private readonly cleanupCallbacks: Array<() => void | Promise<void>> = [];
+  private cleanupPromise: Promise<void> | null = null;
 
   private constructor(
     private readonly processName: string,
@@ -33,7 +34,8 @@ export class ExternalProcess {
       spawned.on("exit", (code, signal) => {
         // Fire cleanup hooks on any exit path (clean or otherwise) so e.g.
         // docker containers don't outlive the CLI process that spawned them.
-        void this.runCleanup();
+        // Store the promise so terminate() can await it rather than racing.
+        this.cleanupPromise = this.runCleanup();
         if (code === 0) {
           resolve();
         } else if (code !== 143 && signal !== "SIGTERM" && signal !== "SIGKILL" && signal !== "SIGPIPE") {
@@ -86,22 +88,25 @@ export class ExternalProcess {
 
     console.log(`[${this.processName}] Terminating`);
     const grace = promises.setTimeout(SHUTDOWN_GRACE_PERIOD);
+    const exited = new Promise<void>((r) => this.spawned.once("exit", () => r()));
     this.spawned.stdin?.end();
     this.spawned.stdout?.destroy();
     this.spawned.stderr?.destroy();
     this.spawned.kill("SIGTERM");
-    await grace;
+    await Promise.race([grace, exited]);
     if (this.spawned.exitCode === null) {
       console.error(`[${this.processName}] shutdown timing out. Killing`);
       setImmediate(() => {
         this.spawned.kill("SIGKILL");
       });
     }
-    await this.runCleanup();
+    // Await the cleanup promise started by the exit handler, or run cleanup
+    // directly if the process hasn't exited yet (SIGKILL path above).
+    await (this.cleanupPromise ?? this.runCleanup());
   }
 
   terminateAfter(timeoutMs: number) {
-    const timeout = setTimeout(() => {
+
       console.error(`[${this.processName}] Test timing out, terminating the process.`);
       this.terminate();
     }, timeoutMs);
