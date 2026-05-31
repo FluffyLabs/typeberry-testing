@@ -106,7 +106,7 @@ export class ExternalProcess {
   }
 
   terminateAfter(timeoutMs: number) {
-
+    const timeout = setTimeout(() => {
       console.error(`[${this.processName}] Test timing out, terminating the process.`);
       this.terminate();
     }, timeoutMs);
