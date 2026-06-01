@@ -1,7 +1,5 @@
 import { type ChildProcessWithoutNullStreams, spawn } from "node:child_process";
-import { promises, setTimeout } from "node:timers";
-
-const SHUTDOWN_GRACE_PERIOD = 15_000;
+import { setTimeout } from "node:timers";
 
 export class ExternalProcess {
   static spawn(processName: string, command: string, ...args: string[]) {
@@ -19,6 +17,13 @@ export class ExternalProcess {
   }
 
   public readonly cleanExit: Promise<void>;
+  private readonly cleanupCallbacks: Array<() => void | Promise<void>> = [];
+  private cleanupPromise: Promise<void> | null = null;
+  // Set by terminate() so the exit handler knows non-zero exits are expected.
+  // Without this, `docker rm -f` from cleanup makes the docker CLI exit with
+  // code 137 (container SIGKILL'd) instead of signal=SIGKILL, and the previous
+  // exception list misses that case.
+  private isTerminating = false;
 
   private constructor(
     private readonly processName: string,
@@ -30,7 +35,14 @@ export class ExternalProcess {
       });
 
       spawned.on("exit", (code, signal) => {
+        // Fire cleanup hooks on any exit path (clean or otherwise) so e.g.
+        // docker containers don't outlive the CLI process that spawned them.
+        // Store the promise so terminate() can await it rather than racing.
+        this.cleanupPromise = this.runCleanup();
         if (code === 0) {
+          resolve();
+        } else if (this.isTerminating) {
+          console.error(`[${this.processName}] Process exited during termination (code: ${code}, signal: ${signal}).`);
           resolve();
         } else if (code !== 143 && signal !== "SIGTERM" && signal !== "SIGKILL" && signal !== "SIGPIPE") {
           reject(`[${this.processName}] Process exited (code: ${code}, signal: ${signal})`);
@@ -40,6 +52,22 @@ export class ExternalProcess {
         }
       });
     });
+  }
+
+  onTerminate(fn: () => void | Promise<void>) {
+    this.cleanupCallbacks.push(fn);
+    return this;
+  }
+
+  private async runCleanup() {
+    const pending = this.cleanupCallbacks.splice(0);
+    for (const cb of pending) {
+      try {
+        await cb();
+      } catch (err) {
+        console.error(`[${this.processName}] cleanup hook failed:`, err);
+      }
+    }
   }
 
   async waitForMessage(pattern: RegExp, check: (match: RegExpMatchArray) => boolean = () => true) {
@@ -64,18 +92,22 @@ export class ExternalProcess {
       console.warn("Process already terminated. Ignoring.");
     }
 
+    this.isTerminating = true;
     console.log(`[${this.processName}] Terminating`);
-    const grace = promises.setTimeout(SHUTDOWN_GRACE_PERIOD);
     this.spawned.stdin?.end();
     this.spawned.stdout?.destroy();
     this.spawned.stderr?.destroy();
-    this.spawned.kill("SIGTERM");
-    await grace;
-    if (this.spawned.exitCode === null) {
-      console.error(`[${this.processName}] shutdown timing out. Killing`);
-      setImmediate(() => {
-        this.spawned.kill("SIGKILL");
-      });
+    // Skip the SIGTERM grace period. The docker-wrapped processes we run
+    // (typeberry/minifuzz/picofuzz) don't handle SIGTERM — DOCKER_OPTIONS
+    // configures `--stop-signal=SIGKILL` precisely because of that. The
+    // cleanup hook (`docker rm -f`) reaps the container via the daemon,
+    // which propagates as exit code 137 from the `docker run` CLI; the
+    // isTerminating flag tells cleanExit to accept that as expected.
+    await (this.cleanupPromise ?? this.runCleanup());
+    // If no cleanup hook was registered (or it didn't take the process
+    // down), SIGKILL the spawned CLI directly so we don't leak it.
+    if (this.spawned.exitCode === null && this.spawned.signalCode === null) {
+      this.spawned.kill("SIGKILL");
     }
   }
 

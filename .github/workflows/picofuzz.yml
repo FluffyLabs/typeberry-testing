@@ -112,3 +112,9 @@ jobs:
           name: picofuzz-csv-${{ matrix.test }}
           path: ./picofuzz-result/${{ matrix.test }}.csv
           retention-days: 90
+
+      - name: Reap test containers and volumes
+        if: always()
+        run: |
+          docker ps -aq --filter "label=ci-run=${{ github.run_id }}" | xargs -r docker rm -f
+          docker volume ls -q --filter "label=ci-run=${{ github.run_id }}" | xargs -r docker volume rm -f
