@@ -18,6 +18,11 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+  # The "Get previous run ID" step reads workflow runs through the API.
+  actions: read
+
 jobs:
   picofuzz-full-chain:
     name: Picofuzz Full Chain Test

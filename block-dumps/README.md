@@ -80,7 +80,8 @@ npm start -- \
    upload the `.bin` as an asset:
    `gh release create block-dumps-full-v2 ./full/chain-100k.bin --title "..." --notes "..."`
 3. Update `full/chain-100k.bin.sha256` (`shasum -a 256 chain-100k.bin > chain-100k.bin.sha256`)
-   and `ASSET_URL` in `full/fetch.sh`.
+   and `ASSET_URL` in `full/fetch.sh` (the only place the URL lives; CI reuses the script).
+   Also update `DUMP_URL` in picofuzz-full-chain-data's `populate.sh`.
 4. Regenerate the fuzz-message dataset in
    [picofuzz-full-chain-data](https://github.com/FluffyLabs/picofuzz-full-chain-data)
    (`./populate.sh`) and bump the submodule.

@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, it } from "node:test";
-import { createSharedVolume, picofuzz, typeberry } from "../common.js";
+import { assertDatasetPresent, createSharedVolume, picofuzz, typeberry } from "../common.js";
 import type { ExternalProcess } from "../external-process.js";
 
 export function runPicofuzzTest(
@@ -50,6 +50,8 @@ export function runPicofuzzTest(
     });
 
     it(`should run ${name} tests`, async () => {
+      // Fail fast on a missing dataset, before any container spawns.
+      assertDatasetPresent(directory);
       typeberryProc = await typeberry({
         timeout: timeoutMs,
         sharedVolume: sharedVolume.name,

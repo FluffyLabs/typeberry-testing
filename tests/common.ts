@@ -205,6 +205,18 @@ export async function minifuzz({
     .onTerminate(() => killContainer(containerName));
 }
 
+/**
+ * picofuzz exits successfully on an empty directory, so a missing dataset
+ * (e.g. an uninitialized data submodule) would silently pass the test.
+ * Call this before spawning any containers.
+ */
+export function assertDatasetPresent(dir: string) {
+  const binFiles = fs.existsSync(dir) ? fs.readdirSync(dir).filter((f) => f.endsWith(".bin")) : [];
+  if (binFiles.length === 0) {
+    throw new Error(`No .bin files found in ${dir} — is the data submodule checked out?`);
+  }
+}
+
 export async function picofuzz({
   dir,
   repeat = 1,
@@ -222,12 +234,7 @@ export async function picofuzz({
   ignore?: string[];
   flavour?: "tiny" | "full";
 }) {
-  // picofuzz exits successfully on an empty directory, so a missing dataset
-  // (e.g. an uninitialized data submodule) would silently pass the test.
-  const binFiles = fs.existsSync(dir) ? fs.readdirSync(dir).filter((f) => f.endsWith(".bin")) : [];
-  if (binFiles.length === 0) {
-    throw new Error(`No .bin files found in ${dir} — is the data submodule checked out?`);
-  }
+  assertDatasetPresent(dir);
   const containerName = uniqueContainerName("picofuzz");
   trackedContainers.add(containerName);
   return ExternalProcess.spawn(
