@@ -13,11 +13,11 @@ on:
         default: 'next'
   repository_dispatch:
   schedule:
-    - cron: '0 6 * * *'
-    - cron: '0 10 * * *'
-    - cron: '0 14 * * *'
-    - cron: '0 18 * * *'
-    - cron: '0 22 * * *'
+    # 2x/day (reduced from 5x) — staggered overnight to relieve the single shared self-hosted runner.
+    # 23:00 Europe/Warsaw = 21:00 UTC (UTC+2 summer)
+    - cron: '0 21 * * *'
+    # 07:00 Europe/Warsaw = 05:00 UTC (UTC+2 summer)
+    - cron: '0 5 * * *'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
