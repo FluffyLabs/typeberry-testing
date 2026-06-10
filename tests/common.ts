@@ -1,5 +1,6 @@
 import { execSync } from "node:child_process";
 import { randomBytes } from "node:crypto";
+import fs from "node:fs";
 import { ExternalProcess } from "./external-process.js";
 
 const SOCKET_PATH = "/shared/jam_target.sock";
@@ -221,6 +222,12 @@ export async function picofuzz({
   ignore?: string[];
   flavour?: "tiny" | "full";
 }) {
+  // picofuzz exits successfully on an empty directory, so a missing dataset
+  // (e.g. an uninitialized data submodule) would silently pass the test.
+  const binFiles = fs.existsSync(dir) ? fs.readdirSync(dir).filter((f) => f.endsWith(".bin")) : [];
+  if (binFiles.length === 0) {
+    throw new Error(`No .bin files found in ${dir} — is the data submodule checked out?`);
+  }
   const containerName = uniqueContainerName("picofuzz");
   trackedContainers.add(containerName);
   return ExternalProcess.spawn(

@@ -19,7 +19,7 @@ jobs:
   picofuzz-full-chain:
     name: Picofuzz Full Chain Test
     runs-on: [self-hosted, perf]
-    timeout-minutes: 120
+    timeout-minutes: 170
     steps:
       - uses: actions/checkout@v6
 

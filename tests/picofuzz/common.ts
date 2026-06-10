@@ -58,6 +58,7 @@ export function runPicofuzzTest(
           initGenesisFromAncestry,
           highMemory,
           memory,
+          // typeberry config uses the American spelling; picofuzz CLI the British one.
           flavor: flavour,
         },
       });

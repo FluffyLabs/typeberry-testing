@@ -7,5 +7,6 @@ runPicofuzzTest("full_chain", EXAMPLES_DIR, {
   flavour: "full",
   memory: "4096m",
   noLogs: true,
-  timeoutMs: 90 * 60 * 1000,
+  // ~56ms/message was observed for this dataset, so a full run takes ~95 minutes.
+  timeoutMs: 150 * 60 * 1000,
 });
