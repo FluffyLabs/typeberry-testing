@@ -1,6 +1,9 @@
 name: Docker Imports Full
 
 on:
+  # TEMPORARY pre-merge CI verification trigger - remove before merge
+  push:
+    branches: [ td-full-chain-dump ]
   workflow_dispatch:
     inputs:
       version:
