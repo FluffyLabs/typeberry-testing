@@ -15,11 +15,14 @@ Check out our performance statistics over time at [typeberry.fluffylabs.dev](htt
 [![Docker Imports](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/docker-imports.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/docker-imports.yml)
 [![Docker Conformance](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/docker-conformance.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/docker-conformance.yml)
 [![Docker Test Vectors](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/docker-test-vectors.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/docker-test-vectors.yml)
+[![Docker Imports Full](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/docker-imports-full.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/docker-imports-full.yml)
+[![Picofuzz Full Chain](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/picofuzz-full.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/picofuzz-full.yml)
 
 | Test Category | Status | Description |
 |---------------|--------|-------------|
 | **Docker Works** | [![Docker Works](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/docker-works.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/docker-works.yml) | Tests Docker image functionality and basic operations |
 | **Docker Imports** | [![Docker Imports](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/docker-imports.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/docker-imports.yml) | Docker image is able to import standard block dumps |
+| **Docker Imports Full** | [![Docker Imports Full](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/docker-imports-full.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/docker-imports-full.yml) | Imports the 100k-block full-chainspec dump (daily; dump fetched from a release asset) |
 | **Docker Conformance** | [![Docker Conformance](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/docker-conformance.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/docker-conformance.yml) | Tests JAM conformance using Docker with latest conformance test suite |
 | **Docker Test Vectors** | [![Docker Test Vectors](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/docker-test-vectors.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/docker-test-vectors.yml) | Tests W3F test vectors using Docker with latest test suite |
 | **NPM Works** | [![NPM Works](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/npm-works.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/npm-works.yml) | Tests NPM package installation and basic functionality |
@@ -29,6 +32,7 @@ Check out our performance statistics over time at [typeberry.fluffylabs.dev](htt
 | **Picofuzz Safrole** | [![Picofuzz Tests](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/picofuzz.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/picofuzz.yml) | Tests Safrole protocol implementation with fuzzing |
 | **Picofuzz Storage** | [![Picofuzz Tests](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/picofuzz.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/picofuzz.yml) | Tests storage functionality with comprehensive fuzzing |
 | **Picofuzz Storage Light** | [![Picofuzz Tests](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/picofuzz.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/picofuzz.yml) | Tests storage functionality with lightweight fuzzing |
+| **Picofuzz Full Chain** | [![Picofuzz Full Chain](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/picofuzz-full.yml/badge.svg)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/picofuzz-full.yml) | Imports the 100k-block full-chainspec dump via the fuzz protocol (daily, perf stats) |
 | **Minifuzz Burn** | [![Minifuzz Burn Test](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/minifuzz.yml/badge.svg?job=minifuzz-burn)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/minifuzz.yml) | Burn-in testing for extended fuzzing operations |
 | **Minifuzz Forks** | [![Minifuzz Forks Test](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/minifuzz.yml/badge.svg?job=minifuzz-forks)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/minifuzz.yml) | Tests fork handling and process management |
 | **Minifuzz No Forks** | [![Minifuzz No Forks Test](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/minifuzz.yml/badge.svg?job=minifuzz-no-forks)](https://github.com/FluffyLabs/typeberry-testing/actions/workflows/minifuzz.yml) | Tests single-process operation without forking |
@@ -72,12 +76,19 @@ This repository uses the following submodules:
     JAM conformance traces for picofuzz execution.
 - **[picofuzz-stf-data](https://github.com/FluffyLabs/picofuzz-data/commit/3a85eae167d7ed09778613aa82d0f36ac01339a2)**
     JAM test vectors for picofuzz execution.
+- **[picofuzz-full-chain-data](https://github.com/FluffyLabs/picofuzz-full-chain-data)**
+    Full-chainspec 100k-block fuzz-message dataset (~150 MB). **Not initialized by
+    default** (`update = none`); opt in with:
+    `git -c submodule.picofuzz-full-chain-data.update=checkout submodule update --init picofuzz-full-chain-data`
 
 ### Running All Tests
 
 ```bash
 npm test
 ```
+
+> **Note:** `npm test` runs **all** `*.test.ts` files, including the ~1.5 h full-chain
+> dump tests below — prefer running individual test files.
 
 ### Running Individual Tests
 
@@ -102,6 +113,10 @@ npm exec tsx --test tests/minifuzz/burn.test.ts
 npm exec tsx --test tests/minifuzz/faulty.test.ts
 npm exec tsx --test tests/minifuzz/forks.test.ts
 npm exec tsx --test tests/minifuzz/no_forks.test.ts
+
+# Full-chain dump tests (long: ~1.5h each; dump fetched via block-dumps/full/fetch.sh)
+npm exec tsx --test tests/docker-imports-full.test.ts
+npm exec tsx --test tests/picofuzz/full_chain.test.ts
 ```
 
 ### Running Picofuzz
