@@ -4,3 +4,7 @@
 [submodule "picofuzz-conformance-data"]
 	path = picofuzz-conformance-data
 	url = https://github.com/FluffyLabs/picofuzz-conformance-data
+[submodule "picofuzz-full-chain-data"]
+	path = picofuzz-full-chain-data
+	url = https://github.com/FluffyLabs/picofuzz-full-chain-data
+	update = none
