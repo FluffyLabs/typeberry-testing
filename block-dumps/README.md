@@ -49,3 +49,38 @@ npx @typeberry/convert \
   to-json \
   chain-spec.json
 ```
+
+# Full chainspec block dump (`full/`)
+
+A dump of **100,052 blocks** (time slots `0..100051`; the slot-0 block is the
+genesis block) produced by a running JAM chain using the **full** chainspec.
+
+- `full/chain-spec-full.json` — JIP-4 chain spec (genesis header + full genesis state).
+- `full/chain-100k.bin` — all blocks concatenated (~144 MB). Too large for git;
+  distributed as a GitHub release asset and fetched on demand:
+
+```cmd
+bash ./full/fetch.sh
+```
+
+To import the dump in typeberry:
+
+```cmd
+npm start -- \
+  --config=default \
+  --config=.flavor="full" \
+  --config=.chain_spec=./block-dumps/full/chain-spec-full.json \
+  import ./block-dumps/full/chain-100k.bin
+```
+
+## Publishing a new dump
+
+1. Produce the dump (e.g. `jam export`) and the matching JIP-4 chain spec.
+2. Create a new release tag (e.g. `block-dumps-full-v2`) on this repository and
+   upload the `.bin` as an asset:
+   `gh release create block-dumps-full-v2 ./full/chain-100k.bin --title "..." --notes "..."`
+3. Update `full/chain-100k.bin.sha256` (`shasum -a 256 chain-100k.bin > chain-100k.bin.sha256`)
+   and `ASSET_URL` in `full/fetch.sh`.
+4. Regenerate the fuzz-message dataset in
+   [picofuzz-full-chain-data](https://github.com/FluffyLabs/picofuzz-full-chain-data)
+   (`./populate.sh`) and bump the submodule.
