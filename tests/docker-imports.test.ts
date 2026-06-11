@@ -21,7 +21,12 @@ describe("Docker image can import block dumps", { timeout: TEST_TIMEOUT }, () =>
         `/block-dumps/${dir}.bin`,
       ).terminateAfter(TEST_TIMEOUT);
 
-      await proc.waitForMessage(/Best block: #100/);
+      // typeberry renamed the importer's best-block log from `Best block: #N`
+      // to `🧊 Best: #N`; match both forms so a cosmetic upstream log change
+      // doesn't let the container finish the import, exit 0, and fail the test
+      // with "Exited" (the regex never matching). Asserting #100 still guards
+      // against a short import (e.g. the swallowed-EOF reader bug).
+      await proc.waitForMessage(/Best(?: block)?: #100/);
     });
   });
 });
