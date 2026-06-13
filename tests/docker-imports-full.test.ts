@@ -2,8 +2,10 @@ import { describe, it } from "node:test";
 import { CI_LABEL, killContainer, registerContainer, TYPEBERRY_IMAGE, uniqueContainerName } from "./common.js";
 import { ExternalProcess } from "./external-process.js";
 
-// ~20 blocks/s was observed for this dump, so a full import takes ~85 minutes.
-const TEST_TIMEOUT = 150 * 60 * 1_000;
+// Full import wall-clock depends heavily on the runner: ~70 min on a fast idle
+// box, far longer on a shared one. Sized for the dedicated non-perf machine,
+// under the workflow's 240-min job cap.
+const TEST_TIMEOUT = 210 * 60 * 1_000;
 
 // The dump holds blocks for time slots 0..100051; typeberry logs the slot of
 // the best block, so reaching the last block prints `Best: #100051`

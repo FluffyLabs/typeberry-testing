@@ -1,9 +1,6 @@
 name: Picofuzz Full Chain
 
 on:
-  # TEMPORARY pre-merge CI verification trigger - remove before merge
-  push:
-    branches: [ td-full-chain-dump ]
   workflow_dispatch:
     inputs:
       version:
@@ -26,8 +23,10 @@ permissions:
 jobs:
   picofuzz-full-chain:
     name: Picofuzz Full Chain Test
-    runs-on: [self-hosted, perf]
-    timeout-minutes: 170
+    # Fuzzes the full 100k-block chain (~hours). Needs a dedicated beefier
+    # 'non-perf' machine; on the shared runner this will not finish in time.
+    runs-on: [self-hosted, non-perf]
+    timeout-minutes: 240
     steps:
       - uses: actions/checkout@v6
 
