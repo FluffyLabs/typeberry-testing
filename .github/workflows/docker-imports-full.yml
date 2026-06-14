@@ -1,0 +1,66 @@
+name: Docker Imports Full
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'typeberry version: `next` (default), `<semver>-<sha>` (pre-release), or `<semver>` (release)'
+        required: false
+        default: 'next'
+  schedule:
+    # 3:30 AM Europe/Warsaw (1:30 UTC, using UTC+2 summer time)
+    - cron: '30 1 * * *'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  docker-imports-full:
+    name: Docker Imports Full Chain Test
+    # Imports the full 100k-block chain (~hours). Needs a dedicated beefier
+    # 'non-perf' machine; on the shared runner this will not finish in time.
+    runs-on: [self-hosted, non-perf]
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Provision Typeberry image
+        uses: ./.github/actions/provision-typeberry
+        with:
+          target: docker
+          version: ${{ github.event.inputs.version || 'next' }}
+
+      - name: Fetch block dump (runner cache)
+        run: |
+          # The asset URL and checksum logic live in fetch.sh only; the cache
+          # just shuttles the file across runs (checkout wipes gitignored files).
+          CACHE=$HOME/.cache/typeberry-testing
+          mkdir -p $CACHE
+          if [ -f $CACHE/chain-100k.bin ]; then
+            cp $CACHE/chain-100k.bin block-dumps/full/
+          fi
+          bash block-dumps/full/fetch.sh
+          cp block-dumps/full/chain-100k.bin $CACHE/
+
+      - name: Run full-chain import test
+        run: |
+          npm exec tsx --test tests/docker-imports-full.test.ts
+
+      - name: Reap test containers and volumes
+        if: always()
+        run: |
+          docker ps -aq --filter "label=ci-run=${{ github.run_id }}" | xargs -r docker rm -f
+          docker volume ls -q --filter "label=ci-run=${{ github.run_id }}" | xargs -r docker volume rm -f

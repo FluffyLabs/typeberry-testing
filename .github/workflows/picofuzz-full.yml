@@ -1,0 +1,100 @@
+name: Picofuzz Full Chain
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'typeberry version: `next` (default), `<semver>-<sha>` (pre-release), or `<semver>` (release)'
+        required: false
+        default: 'next'
+  schedule:
+    # 4:30 AM Europe/Warsaw (2:30 UTC, using UTC+2 summer time)
+    - cron: '30 2 * * *'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  # The "Get previous run ID" step reads workflow runs through the API.
+  actions: read
+
+jobs:
+  picofuzz-full-chain:
+    name: Picofuzz Full Chain Test
+    # Fuzzes the full 100k-block chain (~hours). Needs a dedicated beefier
+    # 'non-perf' machine; on the shared runner this will not finish in time.
+    runs-on: [self-hosted, non-perf]
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Checkout full-chain fuzz data submodule
+        run: |
+          git -c submodule.picofuzz-full-chain-data.update=checkout \
+            submodule update --init picofuzz-full-chain-data
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Provision Typeberry image
+        uses: ./.github/actions/provision-typeberry
+        with:
+          target: docker
+          version: ${{ github.event.inputs.version || 'next' }}
+
+      - name: Build picofuzz
+        run: npm run build-docker -w @fluffylabs/picofuzz
+
+      - name: Get previous run ID
+        id: previous-run
+        run: |
+          WORKFLOW_ID=$(curl -s \
+            -H "Authorization: token $GH_TOKEN" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/repos/$GH_REPO/actions/workflows" \
+            | jq -r '.workflows[] | select(.name == "Picofuzz Full Chain") | .id')
+          PREVIOUS_RUN_ID=$(curl -s \
+            -H "Authorization: token $GH_TOKEN" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/repos/$GH_REPO/actions/workflows/$WORKFLOW_ID/runs?branch=main&status=success&per_page=2" \
+            | jq -r '.workflow_runs[1].id')
+          echo "run-id=$PREVIOUS_RUN_ID" >> $GITHUB_OUTPUT
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+
+      - run: mkdir ./picofuzz-result && chmod 777 ./picofuzz-result
+
+      - name: Download previous CSV files
+        uses: actions/download-artifact@v8
+        with:
+          name: picofuzz-csv-full_chain
+          path: ./picofuzz-result/
+          github-token: ${{ secrets.ARTIFACTS_PAT }}
+          run-id: ${{ steps.previous-run.outputs.run-id }}
+        continue-on-error: true
+
+      - name: Run picofuzz full chain
+        run: |
+          npm exec tsx --test tests/picofuzz/full_chain.test.ts
+
+      - name: Upload CSV results
+        uses: actions/upload-artifact@v7
+        with:
+          name: picofuzz-csv-full_chain
+          path: ./picofuzz-result/full_chain.csv
+          retention-days: 90
+
+      - name: Reap test containers and volumes
+        if: always()
+        run: |
+          docker ps -aq --filter "label=ci-run=${{ github.run_id }}" | xargs -r docker rm -f
+          docker volume ls -q --filter "label=ci-run=${{ github.run_id }}" | xargs -r docker volume rm -f

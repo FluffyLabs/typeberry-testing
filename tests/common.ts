@@ -1,5 +1,6 @@
 import { execSync } from "node:child_process";
 import { randomBytes } from "node:crypto";
+import fs from "node:fs";
 import { ExternalProcess } from "./external-process.js";
 
 const SOCKET_PATH = "/shared/jam_target.sock";
@@ -135,7 +136,7 @@ export async function typeberry({
   timeout: number;
   dockerArgs?: string[];
   sharedVolume?: string;
-  options?: { highMemory?: boolean; initGenesisFromAncestry?: boolean };
+  options?: { highMemory?: boolean; memory?: string; initGenesisFromAncestry?: boolean; flavor?: "tiny" | "full" };
 }) {
   const containerName = uniqueContainerName("typeberry");
   trackedContainers.add(containerName);
@@ -149,10 +150,11 @@ export async function typeberry({
     "--label",
     CI_LABEL,
     ...dockerArgs,
-    ...DOCKER_OPTIONS(options.highMemory ? "2048m" : "512m"),
+    ...DOCKER_OPTIONS(options.memory ?? (options.highMemory ? "2048m" : "512m")),
     "-v",
     `${sharedVolume}:/shared`,
     TYPEBERRY_IMAGE,
+    ...(options.flavor === "full" ? ["--config=default", '--config=.flavor="full"'] : []),
     "fuzz-target",
     ...(options.initGenesisFromAncestry === true ? ["--init-genesis-from-ancestry"] : []),
     SOCKET_PATH,
@@ -203,6 +205,18 @@ export async function minifuzz({
     .onTerminate(() => killContainer(containerName));
 }
 
+/**
+ * picofuzz exits successfully on an empty directory, so a missing dataset
+ * (e.g. an uninitialized data submodule) would silently pass the test.
+ * Call this before spawning any containers.
+ */
+export function assertDatasetPresent(dir: string) {
+  const binFiles = fs.existsSync(dir) ? fs.readdirSync(dir).filter((f) => f.endsWith(".bin")) : [];
+  if (binFiles.length === 0) {
+    throw new Error(`No .bin files found in ${dir} — is the data submodule checked out?`);
+  }
+}
+
 export async function picofuzz({
   dir,
   repeat = 1,
@@ -210,6 +224,7 @@ export async function picofuzz({
   timeout,
   statsFile,
   ignore = [],
+  flavour = "tiny",
 }: {
   dir: string;
   repeat?: number;
@@ -217,7 +232,9 @@ export async function picofuzz({
   timeout: number;
   statsFile?: string;
   ignore?: string[];
+  flavour?: "tiny" | "full";
 }) {
+  assertDatasetPresent(dir);
   const containerName = uniqueContainerName("picofuzz");
   trackedContainers.add(containerName);
   return ExternalProcess.spawn(
@@ -234,12 +251,15 @@ export async function picofuzz({
     "-v",
     `${process.cwd()}/picofuzz-conformance-data:/app/picofuzz-conformance-data:ro`,
     "-v",
+    `${process.cwd()}/picofuzz-full-chain-data:/app/picofuzz-full-chain-data:ro`,
+    "-v",
     `${process.cwd()}/picofuzz-result:/app/picofuzz-result`,
     "-v",
     `${sharedVolume}:/shared`,
     "picofuzz",
     ...(statsFile ? [`--stats=/app/picofuzz-result/${statsFile}`] : []),
     ...ignore.flatMap((f) => ["--ignore", f]),
+    `--flavour=${flavour}`,
     `--repeat=${repeat}`,
     `/app/${dir}`,
     SOCKET_PATH,
