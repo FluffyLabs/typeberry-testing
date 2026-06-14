@@ -13,6 +13,7 @@ export function runPicofuzzTest(
     highMemory = false,
     flavour = "tiny",
     memory,
+    inMemory = false,
     timeoutMs = 10 * 60 * 1000,
   }: {
     initGenesisFromAncestry?: boolean;
@@ -22,6 +23,7 @@ export function runPicofuzzTest(
     highMemory?: boolean;
     flavour?: "tiny" | "full";
     memory?: string;
+    inMemory?: boolean;
     timeoutMs?: number;
   } = {},
 ) {
@@ -60,6 +62,7 @@ export function runPicofuzzTest(
           initGenesisFromAncestry,
           highMemory,
           memory,
+          inMemory,
           // typeberry config uses the American spelling; picofuzz CLI the British one.
           flavor: flavour,
         },
