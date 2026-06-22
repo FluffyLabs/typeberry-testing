@@ -23,8 +23,10 @@ jobs:
     name: Docker Imports Full Chain Test
     # Imports the full 100k-block chain (~hours). Needs a dedicated beefier
     # 'non-perf' machine; on the shared runner this will not finish in time.
+    # Cap sits ~30 min above the test's own 360-min timeout so the test
+    # self-aborts and reaps its container before GitHub hard-kills the job.
     runs-on: [self-hosted, non-perf]
-    timeout-minutes: 240
+    timeout-minutes: 390
     steps:
       - uses: actions/checkout@v6
 

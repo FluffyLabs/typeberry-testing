@@ -3,9 +3,11 @@ import { CI_LABEL, killContainer, registerContainer, TYPEBERRY_IMAGE, uniqueCont
 import { ExternalProcess } from "./external-process.js";
 
 // Full import wall-clock depends heavily on the runner: ~70 min on a fast idle
-// box, far longer on a shared one. Sized for the dedicated non-perf machine,
-// under the workflow's 240-min job cap.
-const TEST_TIMEOUT = 210 * 60 * 1_000;
+// box, far longer on a shared/contended one. A scheduled run in 2026-06 reached
+// only ~block 83k/100k within 210 min (≈250 min projected for the full chain),
+// so this is sized well above that. Kept under the workflow's 390-min job cap so
+// the test self-aborts and reaps its container before GitHub hard-kills the job.
+const TEST_TIMEOUT = 360 * 60 * 1_000;
 
 // The dump holds blocks for time slots 0..100051; typeberry logs the slot of
 // the best block, so reaching the last block prints `Best: #100051`
