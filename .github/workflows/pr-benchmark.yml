@@ -107,6 +107,15 @@ jobs:
           echo "Found workflow run ID: $WORKFLOW_RUN_ID"
           echo "workflow_run_id=$WORKFLOW_RUN_ID" >> $GITHUB_OUTPUT
 
+      - name: Free disk space
+        run: |
+          echo "Disk before cleanup:"
+          df -h .
+          docker image prune -f
+          rm -rf ./docker-image
+          echo "Disk after cleanup:"
+          df -h .
+
       - name: Download docker image artifact
         uses: actions/download-artifact@v8
         with:
@@ -118,8 +127,9 @@ jobs:
 
       - name: Load docker image
         run: |
-          gunzip ./docker-image/typeberry-image.tar.gz
-          docker load -i ./docker-image/typeberry-image.tar
+          # Stream directly into docker load to avoid writing the uncompressed tar to disk.
+          zcat ./docker-image/typeberry-image.tar.gz | docker load
+          rm -rf ./docker-image
           # Tag as the image the tests resolve via TYPEBERRY_IMAGE (default).
           IMAGE_ID=$(docker images --format "{{.ID}}" typeberry | head -n 1)
           if [ -z "$IMAGE_ID" ]; then
