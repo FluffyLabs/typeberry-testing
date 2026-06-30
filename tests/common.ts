@@ -138,7 +138,13 @@ export async function typeberry({
   timeout: number;
   dockerArgs?: string[];
   sharedVolume?: string;
-  options?: { highMemory?: boolean; memory?: string; initGenesisFromAncestry?: boolean; flavor?: "tiny" | "full"; inMemory?: boolean };
+  options?: {
+    highMemory?: boolean;
+    memory?: string;
+    initGenesisFromAncestry?: boolean;
+    flavor?: "tiny" | "full";
+    inMemory?: boolean;
+  };
 }) {
   const containerName = uniqueContainerName("typeberry");
   trackedContainers.add(containerName);
