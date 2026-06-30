@@ -11,6 +11,10 @@ on:
         description: 'typeberry version: `next` (default), `<semver>-<sha>` (pre-release), or `<semver>` (release)'
         required: false
         default: 'next'
+      backend:
+        description: 'State backend: fjall or lmdb (default: version default)'
+        required: false
+        default: ''
   repository_dispatch:
   schedule:
     # 2x/day (reduced from 5x) — staggered overnight to relieve the single shared self-hosted runner.
@@ -100,6 +104,8 @@ jobs:
       - name: Run picofuzz ${{ matrix.test }}
         run: |
           npm exec tsx --test tests/picofuzz/${{ matrix.test }}.test.ts
+        env:
+          STATE_BACKEND: ${{ github.event.inputs.backend || '' }}
 
       - name: Upload CSV results
         uses: actions/upload-artifact@v7

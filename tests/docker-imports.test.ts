@@ -3,6 +3,7 @@ import { TYPEBERRY_IMAGE } from "./common.js";
 import { ExternalProcess } from "./external-process.js";
 
 const TEST_TIMEOUT = 5 * 60 * 1_000;
+const STATE_BACKEND = process.env.STATE_BACKEND ?? "";
 
 describe("Docker image can import block dumps", { timeout: TEST_TIMEOUT }, () => {
   ["fallback", "safrole", "storage", "storage_light"].forEach((dir) => {
@@ -17,6 +18,7 @@ describe("Docker image can import block dumps", { timeout: TEST_TIMEOUT }, () =>
         TYPEBERRY_IMAGE,
         "--config=default",
         "--config=.chain_spec=/block-dumps/chain-spec.json",
+        ...(STATE_BACKEND ? [`--config=.state_backend="${STATE_BACKEND}"`] : []),
         "import",
         `/block-dumps/${dir}.bin`,
       ).terminateAfter(TEST_TIMEOUT);
