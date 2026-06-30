@@ -60,6 +60,8 @@ for (const sig of ["SIGINT", "SIGTERM", "SIGHUP"] as const) {
  */
 export const TYPEBERRY_IMAGE = process.env.TYPEBERRY_IMAGE ?? "typeberry:test";
 
+const STATE_BACKEND = process.env.STATE_BACKEND ?? "";
+
 const DOCKER_OPTIONS = (mem = "512m") => [
   "--cpu-shares",
   "2048",
@@ -136,10 +138,13 @@ export async function typeberry({
   timeout: number;
   dockerArgs?: string[];
   sharedVolume?: string;
-  options?: { highMemory?: boolean; memory?: string; initGenesisFromAncestry?: boolean; flavor?: "tiny" | "full" };
+  options?: { highMemory?: boolean; memory?: string; initGenesisFromAncestry?: boolean; flavor?: "tiny" | "full"; inMemory?: boolean };
 }) {
   const containerName = uniqueContainerName("typeberry");
   trackedContainers.add(containerName);
+  if (STATE_BACKEND && !options.inMemory) {
+    dockerArgs = [...dockerArgs, "-e", `JAM_FUZZ_DB=${STATE_BACKEND}-hybrid`];
+  }
   const typeberry = ExternalProcess.spawn(
     "typeberry",
     "docker",

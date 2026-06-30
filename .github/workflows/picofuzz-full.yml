@@ -7,6 +7,10 @@ on:
         description: 'typeberry version: `next` (default), `<semver>-<sha>` (pre-release), or `<semver>` (release)'
         required: false
         default: 'next'
+      backend:
+        description: 'State backend: fjall or lmdb (default: version default)'
+        required: false
+        default: ''
   schedule:
     # 4:30 AM Europe/Warsaw (2:30 UTC, using UTC+2 summer time)
     - cron: '30 2 * * *'
@@ -85,6 +89,8 @@ jobs:
       - name: Run picofuzz full chain
         run: |
           npm exec tsx --test tests/picofuzz/full_chain.test.ts
+        env:
+          STATE_BACKEND: ${{ github.event.inputs.backend || '' }}
 
       - name: Upload CSV results
         uses: actions/upload-artifact@v7
