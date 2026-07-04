@@ -8,7 +8,7 @@ on:
         required: false
         default: 'next'
       backend:
-        description: 'State backend: fjall or lmdb (default: version default)'
+        description: 'State backend: fjall, lmdb, fjall-hybrid, lmdb-hybrid (default: version default)'
         required: false
         default: ''
   schedule:
