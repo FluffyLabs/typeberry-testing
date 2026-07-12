@@ -9,10 +9,6 @@ runPicofuzzTest("conformance", EXAMPLES_DIR, {
   noLogs: true,
   ignore: [],
   highMemory: true,
-  // Run with a pure in-memory state db. Conformance re-initializes genesis state
-  // on every vector, which is pathologically slow on the on-disk fuzz db (the
-  // genesis reset re-opens/wipes the keyspace each time) — the on-disk fjall
-  // backend pushed this suite past its timeout. State roots don't depend on the
-  // storage backend, so in-memory keeps conformance correct and fast.
   inMemory: true,
+  timeoutMs: 45 * 60 * 1000,
 });
