@@ -2,7 +2,10 @@ name: Deploy Performance Graph
 
 on:
   workflow_run:
-    workflows: ["Picofuzz Tests"]
+    # "Picofuzz Full Chain" runs on its own schedule and uploads the
+    # picofuzz-csv-full_chain artifact; listing it here redeploys the page
+    # same-day when a fresh full-chain result lands.
+    workflows: ["Picofuzz Tests", "Picofuzz Full Chain"]
     types: [completed]
     branches: [main]
   workflow_dispatch:
@@ -16,6 +19,8 @@ permissions:
   contents: read
   pages: write
   id-token: write
+  # Read the Actions API to resolve the latest "Picofuzz Full Chain" run.
+  actions: read
 
 concurrency:
   group: "pages"
@@ -48,6 +53,37 @@ jobs:
           github-token: ${{ secrets.ARTIFACTS_PAT }}
           merge-multiple: true
           run-id: ${{ github.event.workflow_run.id || inputs.workflow_run_id }}
+        continue-on-error: true
+
+      # The full-chain CSV lives in the separate "Picofuzz Full Chain" workflow,
+      # so the triggering run above never contains it. Resolve that workflow's
+      # latest successful run and pull its artifact regardless of what triggered
+      # this deploy, so the full-chain chart stays fresh on every deploy.
+      - name: Get latest Picofuzz Full Chain run ID
+        id: full-chain-run
+        run: |
+          WORKFLOW_ID=$(curl -s \
+            -H "Authorization: token $GH_TOKEN" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/repos/$GH_REPO/actions/workflows" \
+            | jq -r '.workflows[] | select(.name == "Picofuzz Full Chain") | .id')
+          RUN_ID=$(curl -s \
+            -H "Authorization: token $GH_TOKEN" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/repos/$GH_REPO/actions/workflows/$WORKFLOW_ID/runs?branch=main&status=success&per_page=1" \
+            | jq -r '.workflow_runs[0].id')
+          echo "run-id=$RUN_ID" >> $GITHUB_OUTPUT
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+
+      - name: Download full-chain CSV artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: picofuzz-csv-full_chain
+          path: ./perf-graph/csv-artifacts
+          github-token: ${{ secrets.ARTIFACTS_PAT }}
+          run-id: ${{ steps.full-chain-run.outputs.run-id }}
         continue-on-error: true
 
       - name: Compile merge script
