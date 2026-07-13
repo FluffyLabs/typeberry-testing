@@ -8,6 +8,7 @@ import { ExternalProcess } from "./external-process.js";
 // so this is sized well above that. Kept under the workflow's 390-min job cap so
 // the test self-aborts and reaps its container before GitHub hard-kills the job.
 const TEST_TIMEOUT = 360 * 60 * 1_000;
+const STATE_BACKEND = process.env.STATE_BACKEND ?? "";
 
 // The dump holds blocks for time slots 0..100051; typeberry logs the slot of
 // the best block, so reaching the last block prints `Best: #100051`
@@ -33,6 +34,7 @@ describe("Docker image can import the full-chainspec block dump", { timeout: TES
       "--config=default",
       '--config=.flavor="full"',
       "--config=.chain_spec=/block-dumps/full/chain-spec-full.json",
+      ...(STATE_BACKEND ? [`--config=.state_backend="${STATE_BACKEND}"`] : []),
       "import",
       "/block-dumps/full/chain-100k.bin",
     )

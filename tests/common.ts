@@ -60,6 +60,8 @@ for (const sig of ["SIGINT", "SIGTERM", "SIGHUP"] as const) {
  */
 export const TYPEBERRY_IMAGE = process.env.TYPEBERRY_IMAGE ?? "typeberry:test";
 
+const STATE_BACKEND = process.env.STATE_BACKEND ?? "";
+
 const DOCKER_OPTIONS = (mem = "512m") => [
   "--cpu-shares",
   "2048",
@@ -146,6 +148,9 @@ export async function typeberry({
 }) {
   const containerName = uniqueContainerName("typeberry");
   trackedContainers.add(containerName);
+  if (STATE_BACKEND && !options.inMemory) {
+    dockerArgs = [...dockerArgs, "-e", `JAM_FUZZ_DB=${STATE_BACKEND}`];
+  }
   // Global config directives applied before the `fuzz-target` subcommand, in
   // order. `--config=default` is the implicit default; we list it explicitly so
   // jq-style overrides have a base config to layer onto.
@@ -157,13 +162,6 @@ export async function typeberry({
     configArgs.push('--config=.flavor="full"');
   }
   if (options.inMemory === true) {
-    // Force a pure in-memory state db. The default config sets
-    // `database_base_path: "./database"`, which the fuzz-target inherits and
-    // turns into an on-disk LMDB/fjall store; clearing it makes the node's
-    // resolveFuzzDbBase() return undefined → in-memory backend. Used by the
-    // conformance suite, whose short per-vector genesis resets are slow on the
-    // on-disk fuzz db and don't need its heap-bounding (state roots are
-    // storage-agnostic, so correctness is unaffected).
     configArgs.push('--config=.database_base_path="undefined"');
   }
   const typeberry = ExternalProcess.spawn(
