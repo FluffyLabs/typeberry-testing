@@ -10,8 +10,8 @@ stats"), alongside the existing per-scenario charts (`conformance`, `fallback`,
 ## Context
 
 - The perf page renders one `<Chart>` per scenario. Each chart loads a CSV from
-  `perf-graph/public/<name>.csv` with the 19-column stats format
-  (`projectName,date,count,sum,mean,median,min,max,range,stdDeviation,variance,p1..p99`).
+  `perf-graph/public/<name>.csv` with the 20-field stats format
+  (`projectName,date,count,sum,mean,median,min,max,range,stdDeviation,variance,p1,p5,p10,p25,p50,p75,p90,p95,p99`).
 - The **Picofuzz Full Chain** workflow (`.github/workflows/picofuzz-full.yml` →
   `tests/picofuzz/full_chain.test.ts`) already emits `full_chain.csv` in exactly
   this format, uploaded as artifact `picofuzz-csv-full_chain`. Each run chains

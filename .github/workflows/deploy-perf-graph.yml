@@ -62,22 +62,32 @@ jobs:
       - name: Get latest Picofuzz Full Chain run ID
         id: full-chain-run
         run: |
-          WORKFLOW_ID=$(curl -s \
-            -H "Authorization: token $GH_TOKEN" \
-            -H "Accept: application/vnd.github.v3+json" \
-            "https://api.github.com/repos/$GH_REPO/actions/workflows" \
-            | jq -r '.workflows[] | select(.name == "Picofuzz Full Chain") | .id')
-          RUN_ID=$(curl -s \
-            -H "Authorization: token $GH_TOKEN" \
-            -H "Accept: application/vnd.github.v3+json" \
-            "https://api.github.com/repos/$GH_REPO/actions/workflows/$WORKFLOW_ID/runs?branch=main&status=success&per_page=1" \
-            | jq -r '.workflow_runs[0].id')
-          echo "run-id=$RUN_ID" >> $GITHUB_OUTPUT
+          api() {
+            curl -sS -H "Authorization: token $GH_TOKEN" \
+              -H "Accept: application/vnd.github.v3+json" "$1"
+          }
+          # `// empty` turns a missing/null match into an empty string so an
+          # unresolved run never leaks a literal "null" into the output.
+          WORKFLOW_ID=$(api "https://api.github.com/repos/$GH_REPO/actions/workflows" \
+            | jq -r '.workflows[]? | select(.name == "Picofuzz Full Chain") | .id // empty') || true
+          RUN_ID=""
+          if [ -n "$WORKFLOW_ID" ]; then
+            RUN_ID=$(api "https://api.github.com/repos/$GH_REPO/actions/workflows/$WORKFLOW_ID/runs?branch=main&status=success&per_page=1" \
+              | jq -r '.workflow_runs[0].id // empty') || true
+          fi
+          if [ -z "$RUN_ID" ]; then
+            # Deliberately non-fatal: the full-chain chart falls back to the
+            # committed/seeded full_chain.csv rather than blocking the deploy of
+            # the other charts. The warning surfaces the degradation in the log.
+            echo "::warning::Could not resolve a successful 'Picofuzz Full Chain' run; the full-chain chart will use the committed/seeded full_chain.csv."
+          fi
+          echo "run-id=$RUN_ID" >> "$GITHUB_OUTPUT"
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
 
       - name: Download full-chain CSV artifact
+        if: steps.full-chain-run.outputs.run-id != ''
         uses: actions/download-artifact@v8
         with:
           name: picofuzz-csv-full_chain
