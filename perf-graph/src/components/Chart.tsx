@@ -52,11 +52,12 @@ function getMinorVersion(fullVersion: string): string {
 
 interface ChartProps {
   name: string;
+  title?: string;
   visibleVersions: Set<string>;
   onVersionsFound: (versions: string[]) => void;
 }
 
-export function Chart({ name, visibleVersions, onVersionsFound }: ChartProps) {
+export function Chart({ name, title, visibleVersions, onVersionsFound }: ChartProps) {
   const [data, setData] = useState<PerformanceData[]>([]);
   const [allData, setAllData] = useState<PerformanceData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -174,7 +175,7 @@ export function Chart({ name, visibleVersions, onVersionsFound }: ChartProps) {
 
   return (
     <div style={{ padding: "20px" }}>
-      <h3>{name}</h3>
+      <h3>{title ?? name}</h3>
       <div style={{ marginBottom: "30px" }}>
         <h4>Block import time ({UNIT})</h4>
         <ResponsiveContainer width="100%" height={400}>

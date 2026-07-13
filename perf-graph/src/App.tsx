@@ -93,6 +93,15 @@ function App() {
         <Chart name="conformance" visibleVersions={visibleVersions} onVersionsFound={handleVersionsFound} />
       </div>
 
+      <div className="full-chain-section">
+        <Chart
+          name="full_chain"
+          title="Full chain import (100k blocks)"
+          visibleVersions={visibleVersions}
+          onVersionsFound={handleVersionsFound}
+        />
+      </div>
+
       <div className="app">
         <Chart name="fallback" visibleVersions={visibleVersions} onVersionsFound={handleVersionsFound} />
         <Chart name="safrole" visibleVersions={visibleVersions} onVersionsFound={handleVersionsFound} />
